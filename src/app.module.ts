@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
 import { MiningModule } from './mining/mining.module'; // << فقط این import میمونه
+import { SettingsModule } from './settings/settings.module';
+import { ExchangeModule } from './exchange/exchange.module';
 
 @Module({
   imports: [
@@ -32,10 +34,12 @@ import { MiningModule } from './mining/mining.module'; // << فقط این impor
     AuthModule,
     UserModule,
     GameModule,
-    MiningModule, // <<-- اینجا به درستی import شده
+    SettingsModule, // <<-- حتما این ماژول را قبل از ExchangeModule ایمپورت کن
+    MiningModule,
+    ExchangeModule,
   ],
   // Controller و Provider های مربوط به mining از اینجا حذف می شوند!
-  controllers: [], 
+  controllers: [],
   providers: [],
 })
 export class AppModule {}

@@ -102,64 +102,54 @@ export class MiningService {
             ? userHardwareInstance.level
             : 0;
 
-          if (currentLevel > 0) {
-            // ۳. کاربر این سخت‌افزار را دارد -> اطلاعات آپگرید را پیدا می‌کنیم
-            const [currentLevelInfo, nextLevelInfo] = await Promise.all([
-              hardwareLevelRepository.findOne({
-                where: { hardware: { id: hardware.id }, level: currentLevel },
-              }),
-              hardwareLevelRepository.findOne({
-                where: {
-                  hardware: { id: hardware.id },
-                  level: currentLevel + 1,
-                },
-              }),
-            ]);
-            return {
-              id: userHardwareInstance.id, // ID نمونه سخت‌افزار کاربر
-              hardwareId: hardware.id,
-              name: hardware.name,
-              level: currentLevel,
-              isOwned: true,
-              currentMiningRatePerHour: currentLevelInfo
-                ? Number(currentLevelInfo.miningRatePerHour)
-                : 0,
-              nextLevelUpgradeCost: nextLevelInfo
-                ? Number(nextLevelInfo.upgradeCost)
-                : null,
-              isMaxLevel: !nextLevelInfo,
-            };
-          } else {
-            // ۴. کاربر این سخت‌افزار را ندارد -> اطلاعات خرید (سطح ۱) را پیدا می‌کنیم
-            const firstLevelInfo = await hardwareLevelRepository.findOne({
-              where: { hardware: { id: hardware.id }, level: 1 },
-            });
-            return {
-              id: null, // کاربر هنوز این نمونه را ندارد
-              hardwareId: hardware.id,
-              name: hardware.name,
-              level: 0,
-              isOwned: false,
-              currentMiningRatePerHour: 0,
-              buyCost: firstLevelInfo
-                ? Number(firstLevelInfo.upgradeCost)
-                : null, // هزینه خرید در واقع هزینه آپگرید از سطح ۰ به ۱ است
-              isMaxLevel: false,
-            };
-          }
+          //   if (currentLevel > 0) {
+          // ۳. کاربر این سخت‌افزار را دارد -> اطلاعات آپگرید را پیدا می‌کنیم
+          const [currentLevelInfo, nextLevelInfo] = await Promise.all([
+            hardwareLevelRepository.findOne({
+              where: { hardware: { id: hardware.id }, level: currentLevel },
+            }),
+            hardwareLevelRepository.findOne({
+              where: {
+                hardware: { id: hardware.id },
+                level: currentLevel + 1,
+              },
+            }),
+          ]);
+          console.log(':::::::::88::::::: ');
+          return {
+            id: userHardwareInstance.id, // ID نمونه سخت‌افزار کاربر
+            hardwareId: hardware.id,
+            name: hardware.name,
+            level: currentLevel,
+            isOwned: true,
+            currentMiningRatePerHour: currentLevelInfo
+              ? Number(currentLevelInfo.miningRatePerHour)
+              : 0,
+            nextLevelUpgradeCost: nextLevelInfo
+              ? Number(nextLevelInfo.upgradeCost)
+              : null,
+            isMaxLevel: !nextLevelInfo,
+          };
+          //   } else {
+
+          //   }
         } else {
-          // اگر پیدا نشد -> کاربر این سخت‌افزار را ندارد
-          //   const firstLevelInfo = await hardwareLevelRepository.findOne({
-          //     where: { hardware: { id: hardware.id }, level: 1 },
-          //   });
+          // ۴. کاربر این سخت‌افزار را ندارد -> اطلاعات خرید (سطح ۱) را پیدا می‌کنیم
+          const firstLevelInfo = await hardwareLevelRepository.findOne({
+            where: { hardware: { id: hardware.id }, level: 1 },
+          });
+
+          console.log(':::::::::::::::: ', firstLevelInfo);
 
           return {
-            id: null,
+            id: null, // کاربر هنوز این نمونه را ندارد
             hardwareId: hardware.id,
             name: hardware.name,
             level: 0,
             isOwned: false,
-            // ... (بقیه پراپرتی‌ها)
+            currentMiningRatePerHour: 0,
+            buyCost: firstLevelInfo ? Number(firstLevelInfo.upgradeCost) : null, // هزینه خرید در واقع هزینه آپگرید از سطح ۰ به ۱ است
+            isMaxLevel: false,
           };
         }
       }),
@@ -218,9 +208,7 @@ export class MiningService {
         throw new BadRequestException('Insufficient balance for upgrade.');
       }
 
-      updatedUser.balance = (
-        Number(updatedUser.balance) - upgradeCost
-      ).toString();
+      updatedUser.balance = Number(updatedUser.balance) - upgradeCost;
       userHardware.level += 1;
 
       // 3. ذخیره هر دو موجودیت
@@ -258,6 +246,110 @@ export class MiningService {
     });
   }
 
+  async buyHardware(userId: number, hardwareId: number) {
+    return this.entityManager.transaction(async (manager) => {
+      // ۱. کاربر و سخت‌افزاری که می‌خواهد بخرد را پیدا می‌کنیم
+      const user = await manager.findOne(User, {
+        where: { id: userId },
+        relations: ['hardwares', 'hardwares.hardware'],
+      });
+      const hardwareToBuy = await manager.findOne(Hardware, {
+        where: { id: hardwareId },
+      });
+
+      if (!user) throw new NotFoundException('User not found.');
+      if (!hardwareToBuy) throw new NotFoundException('Hardware not found.');
+
+      // ۲. چک می‌کنیم که کاربر از قبل این سخت‌افزار را نداشته باشد
+      const alreadyOwned = user.hardwares.some(
+        (uh) => uh.hardware.id === hardwareId,
+      );
+      if (alreadyOwned) {
+        throw new BadRequestException('You already own this hardware.');
+      }
+
+      // ۳. هزینه خرید (هزینه سطح ۱) را پیدا می‌کنیم
+      const hardwareLevelRepository = manager.getRepository(HardwareLevel);
+      const firstLevelInfo = await hardwareLevelRepository.findOne({
+        where: { hardware: { id: hardwareId }, level: 1 },
+      });
+
+      if (!firstLevelInfo || !firstLevelInfo.upgradeCost) {
+        throw new BadRequestException('This hardware is not purchasable.');
+      }
+      const buyCost = Number(firstLevelInfo.upgradeCost);
+
+      // ۴. چک کردن موجودی کاربر
+      if (Number(user.balance) < buyCost) {
+        throw new BadRequestException(
+          'Insufficient balance to buy this hardware.',
+        );
+      }
+
+      // ۵. کسر هزینه و اضافه کردن سخت‌افزار جدید به کاربر
+      user.balance = Number(user.balance) - buyCost;
+
+      const newUserHardware = manager.create(UserHardware, {
+        user: user,
+        hardware: hardwareToBuy,
+        level: 1,
+      });
+
+      await manager.save([user, newUserHardware]);
+
+      // برای اینکه response نهایی سخت‌افزار جدید رو هم شامل بشه، کاربر رو با رابطه جدید refetch میکنیم
+      const updatedUser = await manager.findOne(User, {
+        where: { id: userId },
+        relations: ['hardwares', 'hardwares.hardware'],
+      });
+
+      if (!updatedUser) {
+        // این اتفاق در عمل نباید بیفتد چون کاربر را همین الان آپدیت کردیم،
+        // اما این بررسی کد را بسیار امن‌تر می‌کند.
+        throw new NotFoundException('Failed to refetch user after purchase.');
+      }
+
+      const totalMiningRateAfterPurchase = await this.calculateTotalRate(
+        updatedUser,
+        manager,
+      );
+
+      // ۶. برگرداندن وضعیت کامل و به‌روز شده
+      return this._prepareResponseData(
+        updatedUser,
+        totalMiningRateAfterPurchase,
+        manager,
+      );
+    });
+  }
+
+  private async calculateTotalRate(
+    user: User,
+    manager: EntityManager,
+  ): Promise<number> {
+    if (!user.hardwares || user.hardwares.length === 0) {
+      return 0;
+    }
+
+    const hardwareLevelRepository = manager.getRepository(HardwareLevel);
+    let totalRate = 0;
+
+    const levels = await Promise.all(
+      user.hardwares.map((uh) =>
+        hardwareLevelRepository.findOne({
+          where: { hardware: { id: uh.hardware.id }, level: uh.level },
+        }),
+      ),
+    );
+
+    levels.forEach((levelInfo) => {
+      if (levelInfo) totalRate += Number(levelInfo.miningRatePerHour);
+    });
+
+    return totalRate;
+  }
+
+  // FOR TEST
   async seedInitialData() {
     const hardwareCount = await this.hardwareRepository.count();
     if (hardwareCount > 0) {

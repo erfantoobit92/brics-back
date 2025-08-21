@@ -67,9 +67,9 @@ export class GameService {
     if (user.currentEnergy >= totalCost) {
       user.currentEnergy -= totalCost;
 
-      const currentBalance = BigInt(user.balance);
-      const earnings = BigInt(tapCount * tapValue);
-      user.balance = (currentBalance + earnings).toString();
+      const currentBalance = Number(user.balance);
+      const earnings = Number(tapCount * tapValue);
+      user.balance = currentBalance + earnings;
 
       await this.usersRepository.save(user);
 

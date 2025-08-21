@@ -101,7 +101,7 @@ export class AuthService {
         username: userData.username,
         firstName: userData.first_name,
         photoUrl: userData.photo_url, // موقع ساختن هم عکس رو ذخیره کن
-        balance: '5000', // <--- به string تغییرش بده
+        balance: 5000,
         lastMiningInteraction: new Date(),
       });
 
@@ -111,9 +111,9 @@ export class AuthService {
         });
         if (referrer && referrer.telegramId !== user.telegramId) {
           user.referrerId = referrer.id;
-          const currentReferrerBalance = BigInt(referrer.balance);
-          const bonus = BigInt(1000);
-          referrer.balance = (currentReferrerBalance + bonus).toString();
+          const currentReferrerBalance = Number(referrer.balance);
+          const bonus = Number(1000);
+          referrer.balance = currentReferrerBalance + bonus;
           await this.usersRepository.save(referrer); // <--- از ریپازیتوری معمولی استفاده کن
         }
       }

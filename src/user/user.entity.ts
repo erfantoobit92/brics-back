@@ -27,8 +27,23 @@ export class User {
   @Column({ type: 'text', nullable: true }) // از نوع text استفاده می‌کنیم چون URL ممکنه طولانی باشه
   photoUrl: string | null;
 
-  @Column({ type: 'bigint', default: '0' }) // مقدار پیش‌فرض رو هم به صورت string بذار
-  balance: string;
+  @Column({
+    type: 'numeric', // <<-- نوع را به numeric تغییر دهید
+    precision: 20, // <<-- حداکثر تعداد کل ارقام
+    scale: 4, // <<-- تعداد ارقام بعد از اعشار (۴ رقم برای دقت کافیه)
+    default: 5000,
+    transformer: new ColumnNumericTransformer(), // <<-- مطمئن شوید transformer وجود دارد
+  })
+  balance: number;
+
+  @Column({
+    type: 'numeric',
+    precision: 20,
+    scale: 6, // for 0.000001 precision
+    default: 0,
+    transformer: new ColumnNumericTransformer(), // Assuming you have this transformer for numeric types
+  })
+  bricsBalance: number;
 
   @Column({ default: 1 })
   tapLevel: number;
@@ -49,18 +64,6 @@ export class User {
   @Column({ type: 'integer', nullable: true })
   referrerId: number | null; // اسم رو عوض کردم که واضح‌تر باشه
 
-
-
-
- @Column({
-    type: 'numeric',
-    precision: 20,
-    scale: 6, // for 0.000001 precision
-    default: 0,
-    transformer: new ColumnNumericTransformer(), // Assuming you have this transformer for numeric types
-  })
-  bricsBalance: number;
-
   // ADD THESE NEW COLUMNS
   @Column({
     type: 'numeric',
@@ -71,17 +74,15 @@ export class User {
   })
   unclaimedMiningReward: number;
 
-  @Column({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   lastMiningInteraction: Date;
 
   // ADD THIS RELATION
   @OneToMany(() => UserHardware, (hardware) => hardware.user)
   hardwares: UserHardware[];
-
-
-
-
-
 
   // ارتباط Many-to-One: هر کاربر (user) توسط یک نفر (referrer) معرفی شده
   @ManyToOne(

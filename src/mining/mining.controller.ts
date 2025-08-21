@@ -36,6 +36,15 @@ export class MiningController {
     return this.miningService.upgradeHardware(req.user.sub, userHardwareId);
   }
 
+  @Post('/buy/:hardwareId')
+  async buyHardware(
+    @Req() req,
+    @Param('hardwareId', ParseIntPipe) hardwareId: number,
+  ) {
+    return this.miningService.buyHardware(req.user.id, hardwareId);
+  }
+
+  // FOR TEST
   @Get('/seed')
   async seed() {
     return this.miningService.seedInitialData();
