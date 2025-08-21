@@ -50,21 +50,6 @@ export class User {
   @Column({ type: 'integer', nullable: true })
   referrerId: number | null; // اسم رو عوض کردم که واضح‌تر باشه
 
-  @Column({ type: 'boolean', default: false })
-  isMiningActive: boolean;
-
-  // آخرین باری که کاربر حضورش را اعلام کرده (از طریق فرانت)
-  @Column({ type: 'timestamp', nullable: true })
-  lastSeenInMinePage: Date | null;
-
-  // زمانی که ماینینگ شروع شده (برای محاسبه سود)
-  @Column({ type: 'timestamp', nullable: true })
-  miningStartedAt: Date | null;
-
-  // آخرین باری که کاربر سودش را برداشت کرده است
-  @Column({ type: 'timestamp', nullable: true })
-  lastClaimTimestamp: Date | null;
-
   // ارتباط Many-to-One: هر کاربر (user) توسط یک نفر (referrer) معرفی شده
   @ManyToOne(
     () => User,

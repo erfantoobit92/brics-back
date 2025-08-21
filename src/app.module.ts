@@ -5,10 +5,6 @@ import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
-import { MiningModule } from './mining/mining.module';
-import { Hardware } from './mining/entities/hardware.entity';
-import { HardwareLevel } from './mining/entities/hardware-level.entity';
-import { UserHardware } from './mining/entities/user-hardware.entity';
 
 @Module({
   imports: [
@@ -25,7 +21,7 @@ import { UserHardware } from './mining/entities/user-hardware.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [User, Hardware, HardwareLevel, UserHardware], 
+        entities: [User], 
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -33,7 +29,6 @@ import { UserHardware } from './mining/entities/user-hardware.entity';
     AuthModule,
     UserModule,
     GameModule,
-    MiningModule, // این خط هم باید بدون خطا کار کنه
   ],
 })
 export class AppModule {}
