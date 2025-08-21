@@ -1,3 +1,5 @@
+import { UserHardware } from 'src/mining/entities/user-hardware.entity';
+import { ColumnNumericTransformer } from 'src/utils/column-numeric-transformer';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -25,9 +27,6 @@ export class User {
   @Column({ type: 'text', nullable: true }) // از نوع text استفاده می‌کنیم چون URL ممکنه طولانی باشه
   photoUrl: string | null;
 
-  @Column({ type: 'numeric', precision: 20, scale: 8, default: 0.0 }) // numeric برای دقت بالا در اعشار
-  bricsBalance: number;
-
   @Column({ type: 'bigint', default: '0' }) // مقدار پیش‌فرض رو هم به صورت string بذار
   balance: string;
 
@@ -49,6 +48,40 @@ export class User {
   // این فیلد ID معرف رو نگه میداره (اختیاری)
   @Column({ type: 'integer', nullable: true })
   referrerId: number | null; // اسم رو عوض کردم که واضح‌تر باشه
+
+
+
+
+ @Column({
+    type: 'numeric',
+    precision: 20,
+    scale: 6, // for 0.000001 precision
+    default: 0,
+    transformer: new ColumnNumericTransformer(), // Assuming you have this transformer for numeric types
+  })
+  bricsBalance: number;
+
+  // ADD THESE NEW COLUMNS
+  @Column({
+    type: 'numeric',
+    precision: 20,
+    scale: 6,
+    default: 0,
+    transformer: new ColumnNumericTransformer(),
+  })
+  unclaimedMiningReward: number;
+
+  @Column({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
+  lastMiningInteraction: Date;
+
+  // ADD THIS RELATION
+  @OneToMany(() => UserHardware, (hardware) => hardware.user)
+  hardwares: UserHardware[];
+
+
+
+
+
 
   // ارتباط Many-to-One: هر کاربر (user) توسط یک نفر (referrer) معرفی شده
   @ManyToOne(

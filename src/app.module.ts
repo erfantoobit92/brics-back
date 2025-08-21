@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
+import { MiningModule } from './mining/mining.module'; // << فقط این import میمونه
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // این خط خیلی مهمه!
-      envFilePath: '.env', // مسیر فایل .env
+      isGlobal: true,
+      envFilePath: '.env',
     }),
+
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -21,14 +22,20 @@ import { GameModule } from './game/game.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [User], 
+        autoLoadEntities: true,
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
+
+    // ماژول‌های برنامه شما در اینجا import می شوند
     AuthModule,
     UserModule,
     GameModule,
+    MiningModule, // <<-- اینجا به درستی import شده
   ],
+  // Controller و Provider های مربوط به mining از اینجا حذف می شوند!
+  controllers: [], 
+  providers: [],
 })
 export class AppModule {}

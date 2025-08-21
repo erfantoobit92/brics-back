@@ -8,12 +8,18 @@ import { createHmac } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Hardware } from 'src/mining/entities/hardware.entity';
+import { UserHardware } from 'src/mining/entities/user-hardware.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Hardware)
+    private hardwareRepository: Repository<Hardware>,
+    @InjectRepository(UserHardware)
+    private userHardwareRepository: Repository<UserHardware>,
     private jwtService: JwtService,
   ) {}
 
@@ -96,6 +102,7 @@ export class AuthService {
         firstName: userData.first_name,
         photoUrl: userData.photo_url, // موقع ساختن هم عکس رو ذخیره کن
         balance: '5000', // <--- به string تغییرش بده
+        lastMiningInteraction: new Date(),
       });
 
       if (referrerTelegramId) {
@@ -112,6 +119,24 @@ export class AuthService {
       }
 
       await this.usersRepository.save(user);
+
+      const defaultHardware = await this.hardwareRepository.findOne({
+        where: { id: 1 },
+      });
+
+      if (defaultHardware) {
+        console.log('Assigning default hardware...'); // لاگ برای اطمینان
+        const newUserHardware = this.userHardwareRepository.create({
+          user: user,
+          hardware: defaultHardware,
+          level: 1,
+        });
+        await this.userHardwareRepository.save(newUserHardware);
+        console.log('Hardware assigned!');
+      } else {
+        console.error('Default hardware with ID 1 not found!'); // لاگ برای خطا
+      }
+
       console.log(`New user ${user.id} created.`);
     }
 
