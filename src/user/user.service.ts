@@ -67,14 +67,15 @@ export class UserService {
     const existingUserWithWallet = await this.usersRepository.findOneBy({
       walletAddress,
     });
-    if (!existingUserWithWallet) {
-      throw new BadRequestException('Wallet address already taken.');
-    }
+
     if (existingUserWithWallet && existingUserWithWallet.id !== userId) {
       throw new BadRequestException(
         'This wallet address is already linked to another account.',
       );
     }
+    // if (existingUserWithWallet) {
+    //   throw new BadRequestException('Wallet address already taken.');
+    // }
 
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) throw new NotFoundException('User not found');

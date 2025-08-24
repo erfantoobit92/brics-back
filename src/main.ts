@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common'; // <<-- این رو import کن
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log(process.env.WEB_APP_URL);
+  // console.log(process.env.WEB_APP_URL);
 
   // app.useGlobalPipes(
   //   new ValidationPipe({
@@ -14,17 +14,23 @@ async function bootstrap() {
   // );
 
   app.enableCors({
-    origin: true,
-    // origin: [
-    //   process.env.WEB_APP_URL,
-    //   'https://brics-trade-back.loca.lt',
-    //   'http://localhost:5173',
-    //   'http://127.0.0.1:5173',
-    // ],
+    origin: '*', // یا آدرس ngrok مخصوص فرانت
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
-  await app.listen(3000);
+  // app.enableCors({
+  //   // origin: true,
+  //   origin: [
+  //     process.env.WEB_APP_URL,
+  //     'https://brics-trade-back-2.loca.lt',
+  //     // 'http://localhost:5173',
+  //     // 'http://127.0.0.1:5173',
+  //   ],
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  //   credentials: true,
+  // });
+
+  await app.listen(3000, '0.0.0.0');
 }
 bootstrap();

@@ -145,6 +145,7 @@ export class AuthService {
     const payload = { sub: user.id, telegramId: user.telegramId };
     return {
       access_token: this.jwtService.sign(payload),
+      user,
     };
   }
 }

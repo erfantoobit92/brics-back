@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TonClient, Address } from '@ton/ton';
-import { getHttpEndpoint } from '@orbs-network/ton-access';
+// import { getHttpEndpoint } from '@orbs-network/ton-access';
 
 @Injectable()
 export class TonBlockchainService {
@@ -12,8 +12,14 @@ export class TonBlockchainService {
   }
 
   private async initializeClient() {
-    const endpoint = await getHttpEndpoint({ network: 'mainnet' });
-    this.client = new TonClient({ endpoint });
+    const endpoint = 'https://toncenter.com/api/v2/jsonRPC';
+    const apiKey = process.env.TONCENTER_API_KEY; // Optional: for higher rate limits
+
+    this.client = new TonClient({
+      endpoint,
+      apiKey: apiKey, // You can get a free API key from toncenter.com
+    });
+    this.logger.log('TonClient initialized with a direct endpoint.');
   }
 
   /**
@@ -30,45 +36,62 @@ export class TonBlockchainService {
     requiredAmount: number, // in TON
     afterTimestamp: Date,
   ): Promise<boolean> {
+    console.log('projectWalletAddress', projectWalletAddress);
+    console.log('userWalletAddress', userWalletAddress);
+    console.log('requiredAmount', requiredAmount);
+    console.log('afterTimestamp', afterTimestamp);
+
     if (!this.client) {
-        await this.initializeClient(); // Ensure client is ready
+      await this.initializeClient(); // Ensure client is ready
     }
-      
+    console.log('client READYYY');
+
     try {
+      console.log('client READYYY');
       const projectAddress = Address.parse(projectWalletAddress);
       const userAddress = Address.parse(userWalletAddress);
 
       // Get last 100 transactions for the project's wallet
+      console.log('client READYYY');
       const transactions = await this.client.getTransactions(projectAddress, {
         limit: 100,
       });
 
+      console.log('client READYYY');
+      console.log(transactions);
+
       const requiredAmountNano = BigInt(requiredAmount * 1e9); // Convert TON to nanoton
 
       for (const tx of transactions) {
-        // Check for incoming messages
+        // We only care about incoming, internal messages.
         if (tx.inMessage && tx.inMessage.info.type === 'internal') {
           const senderAddress = tx.inMessage.info.src;
           const txValue = tx.inMessage.info.value.coins;
           const txTimestamp = new Date(tx.now * 1000);
 
-          // 1. Is the sender the user we're checking?
-          // 2. Is the amount sufficient?
-          // 3. Was the transaction made AFTER the user started the task? (Prevents re-using old tx)
-          if (
-            senderAddress.equals(userAddress) &&
-            txValue >= requiredAmountNano &&
-            txTimestamp > afterTimestamp
-          ) {
-            this.logger.log(`Valid transaction found for user ${userWalletAddress}`);
-            return true;
+          // All three conditions must be met:
+          const isCorrectSender =
+            senderAddress.toRawString() === userAddress.toRawString();
+          const isSufficientAmount = txValue >= requiredAmountNano;
+          const isAfterTaskStart = txTimestamp > afterTimestamp;
+
+          if (isCorrectSender && isSufficientAmount && isAfterTaskStart) {
+            this.logger.log(
+              `Valid transaction found from ${userWalletAddress} for ${requiredAmount} TON.`,
+            );
+            return true; // Found it!
           }
         }
       }
       return false;
-    } catch (error) {
-      this.logger.error(`Error verifying TON transaction for ${userWalletAddress}:`, error.stack);
-      return false;
+    } catch (e) {
+      if (e.isAxiosError && e.response?.status === 500) {
+        this.logger.warn(
+          `Toncenter API returned 500 for address ${projectWalletAddress}. Assuming it has no transactions.`,
+        );
+        return false; // به جای کرش کردن، فرض می‌کنیم تراکنشی پیدا نشده
+      }
+      throw e;
     }
   }
 }
