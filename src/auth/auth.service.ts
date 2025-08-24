@@ -89,6 +89,7 @@ export class AuthService {
     if (user) {
       // اطلاعاتش رو با دیتای جدید تلگرام آپدیت کن
       user.firstName = userData.first_name;
+      user.lastName = userData.last_name;
       user.username = userData.username;
       user.photoUrl = userData.photo_url; // photo_url از دیتای تلگرام میاد
       await this.usersRepository.save(user);
@@ -100,6 +101,7 @@ export class AuthService {
         telegramId: userData.id,
         username: userData.username,
         firstName: userData.first_name,
+        lastName: userData.last_name,
         photoUrl: userData.photo_url, // موقع ساختن هم عکس رو ذخیره کن
         balance: 5000,
         lastMiningInteraction: new Date(),

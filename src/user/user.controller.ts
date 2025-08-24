@@ -1,6 +1,15 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ConnectWalletDto } from './dto/connect-wallet.dto'; // Import the DTO
 
 @Controller('user')
 export class UserController {
@@ -18,5 +27,16 @@ export class UserController {
   getReferrals(@Request() req) {
     const userId = req.user.sub;
     return this.userService.findReferrals(userId);
+  }
+
+  @Post('connect-wallet')
+  @UseGuards(JwtAuthGuard)
+  async connectWallet(
+    @Req() req,
+    @Body() connectWalletDto: ConnectWalletDto, // Use the DTO
+  ) {
+    const userId = req.user.id;
+    const { walletAddress } = connectWalletDto;
+    return this.userService.handleWalletConnection(userId, walletAddress);
   }
 }

@@ -7,6 +7,7 @@ import { GameModule } from './game/game.module';
 import { MiningModule } from './mining/mining.module'; // << فقط این import میمونه
 import { SettingsModule } from './settings/settings.module';
 import { ExchangeModule } from './exchange/exchange.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ExchangeModule } from './exchange/exchange.module';
     SettingsModule, // <<-- حتما این ماژول را قبل از ExchangeModule ایمپورت کن
     MiningModule,
     ExchangeModule,
+    TasksModule,
   ],
   // Controller و Provider های مربوط به mining از اینجا حذف می شوند!
   controllers: [],

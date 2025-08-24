@@ -1,4 +1,5 @@
 import { UserHardware } from 'src/mining/entities/user-hardware.entity';
+import { UserTask } from 'src/tasks/entities/user-task.entity';
 import { ColumnNumericTransformer } from 'src/utils/column-numeric-transformer';
 import {
   Entity,
@@ -24,8 +25,14 @@ export class User {
   @Column({ nullable: true })
   firstName: string;
 
+  @Column({ nullable: true })
+  lastName: string;
+
   @Column({ type: 'text', nullable: true }) // از نوع text استفاده می‌کنیم چون URL ممکنه طولانی باشه
   photoUrl: string | null;
+  
+  @Column({ nullable: true, unique: true })
+  walletAddress: string;
 
   @Column({
     type: 'numeric', // <<-- نوع را به numeric تغییر دهید
@@ -83,6 +90,9 @@ export class User {
   // ADD THIS RELATION
   @OneToMany(() => UserHardware, (hardware) => hardware.user)
   hardwares: UserHardware[];
+
+  @OneToMany(() => UserTask, (userTask) => userTask.user)
+  userTasks: UserTask[];
 
   // ارتباط Many-to-One: هر کاربر (user) توسط یک نفر (referrer) معرفی شده
   @ManyToOne(
