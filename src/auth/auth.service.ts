@@ -75,9 +75,6 @@ export class AuthService {
   }
 
   async login(initData: string, startParam?: string) {
-    console.log('ssssssssssss :  ', initData);
-    console.log('ssssssssssss :  ', startParam);
-
     const userData = await this.validateTelegramData(initData);
 
     const referrerTelegramId = startParam ? parseInt(startParam, 10) : null;
@@ -93,7 +90,6 @@ export class AuthService {
       user.username = userData.username;
       user.photoUrl = userData.photo_url; // photo_url از دیتای تلگرام میاد
       await this.usersRepository.save(user);
-      console.log(`User ${user.id} data updated.`);
     }
     // اگر کاربر وجود نداشت (کاربر جدید)
     else {
@@ -127,14 +123,12 @@ export class AuthService {
       });
 
       if (defaultHardware) {
-        console.log('Assigning default hardware...'); // لاگ برای اطمینان
         const newUserHardware = this.userHardwareRepository.create({
           user: user,
           hardware: defaultHardware,
           level: 1,
         });
         await this.userHardwareRepository.save(newUserHardware);
-        console.log('Hardware assigned!');
       } else {
         console.error('Default hardware with ID 1 not found!'); // لاگ برای خطا
       }

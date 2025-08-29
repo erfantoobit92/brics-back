@@ -50,8 +50,6 @@ export class UserService {
     if (!user) {
       throw new Error('User not found');
     }
-    console.log(user.balance);
-    console.log(amount);
     
     user.balance = Number(user.balance) + Number(amount);
 

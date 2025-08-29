@@ -7,6 +7,7 @@ import { User } from 'src/user/user.entity';
 import { Hardware } from './entities/hardware.entity';
 import { HardwareLevel } from './entities/hardware-level.entity';
 import { UserHardware } from './entities/user-hardware.entity';
+import { Task } from 'src/tasks/entities/task.entity';
 
 // تمام Entity هایی که در MiningService استفاده می شوند را import کن
 
@@ -14,7 +15,7 @@ import { UserHardware } from './entities/user-hardware.entity';
   imports: [
     // <<---  این خط حیاتی است!  --- >>
     // به NestJS می گوید که Repository های این Entity ها را برای این ماژول فراهم کند
-    TypeOrmModule.forFeature([User, Hardware, HardwareLevel, UserHardware]),
+    TypeOrmModule.forFeature([User, Hardware, HardwareLevel, UserHardware, Task]),
     AuthModule, // برای استفاده از JwtAuthGuard
   ],
   controllers: [MiningController], // << کنترلر متعلق به این ماژول است

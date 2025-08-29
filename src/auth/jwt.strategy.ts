@@ -8,7 +8,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
     // 1. کلید رو از ConfigService بگیر
     const jwtSecret = configService.get<string>('JWT_SECRET');
-    console.log(jwtSecret);
     
     // 2. چک کن که مقدار وجود داشته باشه. اگه نبود، برنامه رو متوقف کن
     if (!jwtSecret) {

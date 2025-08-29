@@ -36,53 +36,51 @@ export class TonBlockchainService {
     requiredAmount: number, // in TON
     afterTimestamp: Date,
   ): Promise<boolean> {
-    console.log('projectWalletAddress', projectWalletAddress);
-    console.log('userWalletAddress', userWalletAddress);
-    console.log('requiredAmount', requiredAmount);
-    console.log('afterTimestamp', afterTimestamp);
 
     if (!this.client) {
       await this.initializeClient(); // Ensure client is ready
     }
-    console.log('client READYYY');
 
     try {
-      console.log('client READYYY');
       const projectAddress = Address.parse(projectWalletAddress);
       const userAddress = Address.parse(userWalletAddress);
 
-      // Get last 100 transactions for the project's wallet
-      console.log('client READYYY');
       const transactions = await this.client.getTransactions(projectAddress, {
         limit: 100,
       });
 
-      console.log('client READYYY');
-      console.log(transactions);
-
       const requiredAmountNano = BigInt(requiredAmount * 1e9); // Convert TON to nanoton
 
       for (const tx of transactions) {
-        // We only care about incoming, internal messages.
-        if (tx.inMessage && tx.inMessage.info.type === 'internal') {
-          const senderAddress = tx.inMessage.info.src;
-          const txValue = tx.inMessage.info.value.coins;
-          const txTimestamp = new Date(tx.now * 1000);
+        const msg = tx.inMessage;
+        if (!msg || !msg.info) continue;
 
-          // All three conditions must be met:
-          const isCorrectSender =
-            senderAddress.toRawString() === userAddress.toRawString();
+        const info = msg.info as any;
+
+        if (info.type === 'internal') {
+          const senderAddress = info.src?.toRawString?.() ?? '';
+          const txValue = info.value?.coins ?? 0n;
+          // const txTimestamp = new Date(tx.now * 1000);
+
+          const isCorrectSender = senderAddress == userAddress.toRawString();
           const isSufficientAmount = txValue >= requiredAmountNano;
-          const isAfterTaskStart = txTimestamp > afterTimestamp;
+          // const isAfterTaskStart = txTimestamp > afterTimestamp;
+          // console.log('txValue', txValue);
+          // console.log('txTimestamp', txTimestamp);
+          // console.log('isCorrectSender', isCorrectSender);
+          // console.log('isSufficientAmount', isSufficientAmount);
+          // console.log('isAfterTaskStart', isAfterTaskStart);
 
-          if (isCorrectSender && isSufficientAmount && isAfterTaskStart) {
+          if (isCorrectSender && isSufficientAmount) {
             this.logger.log(
-              `Valid transaction found from ${userWalletAddress} for ${requiredAmount} TON.`,
+              `✅ Valid transaction from ${userWalletAddress} for ${requiredAmount} TON.`,
             );
-            return true; // Found it!
+            return true;
           }
         }
       }
+      console.log('false transaction found!');
+
       return false;
     } catch (e) {
       if (e.isAxiosError && e.response?.status === 500) {

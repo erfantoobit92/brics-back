@@ -43,10 +43,7 @@ export class TasksService {
   }
 
   async startTask(userId: number, taskId: string) {
-    console.log(userId);
-    console.log(taskId);
     const task = await this.taskRepository.findOneBy({ id: taskId });
-    console.log(task);
 
     if (!task) {
       throw new NotFoundException('Task not found');
@@ -59,7 +56,6 @@ export class TasksService {
     if (userTask && userTask.status !== UserTaskStatus.PENDING) {
       throw new BadRequestException('Task already started or completed');
     }
-    console.log(`Updating existing UserTask ${userTask?.id} to STARTED.`);
 
     if (!userTask) {
       // Create reference entities instead of partial objects
