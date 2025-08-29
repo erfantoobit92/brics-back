@@ -5,9 +5,11 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { Task } from 'src/tasks/entities/task.entity';
 import { UserTask } from 'src/tasks/entities/user-task.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     TypeOrmModule.forFeature([
       User,
       Task, // <-- 3. Add Task here

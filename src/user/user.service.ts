@@ -10,6 +10,14 @@ import { Task } from 'src/tasks/entities/task.entity';
 import { UserTask, UserTaskStatus } from 'src/tasks/entities/user-task.entity';
 import { TaskType } from 'src/tasks/enum/task-type.enum';
 
+
+export interface PaginatedUsersResult {
+  data: User[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 @Injectable()
 export class UserService {
   constructor(
@@ -147,5 +155,27 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+   async findAll(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<PaginatedUsersResult> {
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await this.usersRepository.findAndCount({
+      skip: skip,
+      take: limit,
+      order: {
+        createdAt: 'DESC', // کاربران جدیدتر اول نمایش داده بشن
+      },
+    });
+
+    return {
+      data: users,
+      total: total,
+      page: +page,
+      limit: +limit,
+    };
   }
 }

@@ -10,6 +10,8 @@ import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Hardware } from 'src/mining/entities/hardware.entity';
 import { UserHardware } from 'src/mining/entities/user-hardware.entity';
+import { AdminLoginDto } from './dto/admin-login.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,7 @@ export class AuthService {
     @InjectRepository(UserHardware)
     private userHardwareRepository: Repository<UserHardware>,
     private jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateTelegramData(initData: string): Promise<any> {
@@ -136,10 +139,36 @@ export class AuthService {
       console.log(`New user ${user.id} created.`);
     }
 
-    const payload = { sub: user.id, telegramId: user.telegramId };
+    const payload = { sub: user.id, telegramId: user.telegramId, role: 'user' };
     return {
       access_token: this.jwtService.sign(payload),
       user,
+    };
+  }
+
+  async adminLogin(
+    adminLoginDto: AdminLoginDto,
+  ): Promise<{ access_token: string }> {
+    const adminUsername = this.configService.get<string>('ADMIN_USERNAME');
+    const adminPassword = this.configService.get<string>('ADMIN_PASSWORD');
+
+    if (
+      adminLoginDto.username !== adminUsername ||
+      adminLoginDto.password !== adminPassword
+    ) {
+      throw new UnauthorizedException('Invalid admin credentials');
+    }
+
+    // We create a special JWT for the admin
+    // The 'sub' can be a fixed ID, and we add a role for future checks
+    const payload = {
+      username: adminLoginDto.username,
+      sub: 'admin-user-id', // A static identifier for the admin
+      role: 'admin', // Very important for protecting admin routes later!
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload),
     };
   }
 }

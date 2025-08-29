@@ -10,11 +10,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Hardware } from '../mining/entities/hardware.entity';
 import { UserHardware } from '../mining/entities/user-hardware.entity';
 import { JwtStrategy } from './jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     // 2. آنها را در forFeature ثبت کن
-    TypeOrmModule.forFeature([
+       PassportModule, // <--- 2. و اینجا اضافه کن
+ TypeOrmModule.forFeature([
       User, 
       Hardware,       // <<-- این اضافه شد
       UserHardware    // <<-- این اضافه شد

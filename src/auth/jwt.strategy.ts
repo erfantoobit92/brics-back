@@ -8,10 +8,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
     // 1. کلید رو از ConfigService بگیر
     const jwtSecret = configService.get<string>('JWT_SECRET');
-    
+
     // 2. چک کن که مقدار وجود داشته باشه. اگه نبود، برنامه رو متوقف کن
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET is not defined in the environment variables!');
+      throw new Error(
+        'JWT_SECRET is not defined in the environment variables!',
+      );
     }
 
     // 3. حالا با خیال راحت ازش استفاده کن
@@ -23,6 +25,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    return { sub: payload.sub, telegramId: payload.telegramId };
+    console.log('--- JWT Strategy Validate Called ---'); // <-- یک لاگ اینجا بذار
+    console.log('Payload from token:', payload); // <-- ببینیم payload چیست
+
+    return {
+      sub: payload.sub,
+      telegramId: payload.telegramId,
+      role: payload.role,
+    };
   }
 }
