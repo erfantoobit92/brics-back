@@ -13,6 +13,7 @@ class LoginDto {
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public() // <-- اینجا ازش استفاده کن!
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() loginDto: LoginDto) {

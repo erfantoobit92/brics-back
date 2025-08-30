@@ -25,9 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    console.log('--- JWT Strategy Validate Called ---'); // <-- یک لاگ اینجا بذار
-    console.log('Payload from token:', payload); // <-- ببینیم payload چیست
-
+    
     return {
       sub: payload.sub,
       telegramId: payload.telegramId,

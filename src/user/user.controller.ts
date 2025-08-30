@@ -28,6 +28,7 @@ export class UserController {
     return this.userService.findAll(page, limit);
   }
 
+  @Roles('user')
   @UseGuards(JwtAuthGuard) // این روت محافظت شده است
   @Get('profile')
   getProfile(@Request() req) {
@@ -35,6 +36,7 @@ export class UserController {
     return this.userService.findOne(req.user.sub);
   }
 
+  @Roles('user')
   @UseGuards(JwtAuthGuard)
   @Get('referrals')
   getReferrals(@Request() req) {
@@ -42,6 +44,7 @@ export class UserController {
     return this.userService.findReferrals(userId);
   }
 
+  @Roles('user')
   @Post('connect-wallet')
   @UseGuards(JwtAuthGuard)
   async connectWallet(

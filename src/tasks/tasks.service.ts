@@ -195,6 +195,18 @@ export class TasksService {
           task.metadata.durationSeconds || 120,
         );
         break;
+          case TaskType.BOOST_TELEGRAM_CHANNEL:
+           if (!user.telegramId) {
+          throw new BadRequestException('User Telegram ID not found.');
+        }
+        isCompleted = await this.telegramService.hasUserBoostedChannel(
+          task.metadata.channelId, // e.g., '@my_channel'
+          user.telegramId,
+        );
+        if (!isCompleted) {
+          throw new BadRequestException('You have not boosted our channel yet.');
+        } 
+        break;
       case TaskType.CONNECT_WALLET:
         // This logic is special. It's usually completed on the front-end by sending the wallet address.
         // Let's assume another endpoint handles this, or it's auto-completed.
@@ -292,4 +304,41 @@ export class TasksService {
       await queryRunner.release();
     }
   }
+
+  //  async handlePostStoryCompletion(userId: number) {
+  //   // 1. تسک فعال "Post Story" رو از دیتابیس پیدا کن
+  //   const postStoryTask = await this.taskRepository.findOneBy({
+  //     type: TaskType.POST_TELEGRAM_STORY,
+  //     isActive: true,
+  //   });
+
+  //   if (!postStoryTask) {
+  //     throw new NotFoundException('The post story task is not currently active.');
+  //   }
+
+  //   // 2. چک کن که آیا کاربر قبلاً این تسک رو انجام داده یا نه
+  //   let userTask = await this.userTaskRepository.findOne({
+  //     where: {
+  //       user: { id: userId },
+  //       task: { id: postStoryTask.id },
+  //     },
+  //   });
+
+  //   if (userTask && userTask.status === UserTaskStatus.COMPLETED) {
+  //     throw new BadRequestException('You have already completed this task.');
+  //   }
+    
+  //   // 3. اگر کاربر تا حالا این تسک رو شروع نکرده بود، یک رکورد جدید براش بساز
+  //   if (!userTask) {
+  //     const userReference = new User();
+  //     userReference.id = userId;
+  //     userTask = this.userTaskRepository.create({
+  //       user: userReference,
+  //       task: postStoryTask,
+  //     });
+  //   }
+
+  //   // 4. تسک رو تکمیل کن و جایزه رو بده (داخل یک تراکنش)
+  //   return this.completeTaskTransaction(userTask, postStoryTask);
+  // }
 }

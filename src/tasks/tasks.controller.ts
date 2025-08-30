@@ -24,4 +24,11 @@ export class TasksController {
     const userId = req.user.sub;
     return this.tasksService.claimReward(userId, taskId);
   }
+
+  //  @UseGuards(JwtAuthGuard)
+  // @Post('complete/post-story')
+  // async completePostStoryTask(@Req() req) {
+  //   const userId = req.user.sub;
+  //   return this.tasksService.handlePostStoryCompletion(userId);
+  // }
 }

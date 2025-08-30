@@ -449,10 +449,10 @@ async seedInitialData() {
       },
       {
         title: 'Add Our Logo to Your Name',
-        description: 'Add our official logo 🧱 to your Telegram name to show your support!',
+        description: 'Add our official logo (BricsTrade) to your Telegram name to show your support!',
         rewardCoin: 5000,
         type: TaskType.ADD_LOGO_TO_PROFILE_NAME,
-        metadata: { logo: '🧱' },
+        metadata: { logo: '(BricsTrade)' },
       },
       {
         title: 'Connect Your TON Wallet',
