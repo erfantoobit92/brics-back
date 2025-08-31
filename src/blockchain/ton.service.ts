@@ -12,23 +12,20 @@ export class TonBlockchainService {
 
   private async initializeClient() {
     const endpoint = 'https://toncenter.com/api/v2/jsonRPC';
-    const apiKey = process.env.TONCENTER_API_KEY; // Optional: for higher rate limits
+    const apiKey = process.env.TONCENTER_API_KEY; 
 
     this.client = new TonClient({
       endpoint,
-      apiKey: apiKey, // You can get a free API key from toncenter.com
+      apiKey: apiKey, 
     });
     this.logger.log('TonClient initialized with a direct endpoint.');
   }
 
- 
   async verifyTonTransaction(
     projectWalletAddress: string,
     userWalletAddress: string,
     requiredAmount: number, // in TON
-    afterTimestamp: Date,
   ): Promise<boolean> {
-
     if (!this.client) {
       await this.initializeClient(); // Ensure client is ready
     }
@@ -52,16 +49,9 @@ export class TonBlockchainService {
         if (info.type === 'internal') {
           const senderAddress = info.src?.toRawString?.() ?? '';
           const txValue = info.value?.coins ?? 0n;
-          // const txTimestamp = new Date(tx.now * 1000);
 
           const isCorrectSender = senderAddress == userAddress.toRawString();
           const isSufficientAmount = txValue >= requiredAmountNano;
-          // const isAfterTaskStart = txTimestamp > afterTimestamp;
-          // console.log('txValue', txValue);
-          // console.log('txTimestamp', txTimestamp);
-          // console.log('isCorrectSender', isCorrectSender);
-          // console.log('isSufficientAmount', isSufficientAmount);
-          // console.log('isAfterTaskStart', isAfterTaskStart);
 
           if (isCorrectSender && isSufficientAmount) {
             this.logger.log(

@@ -156,7 +156,6 @@ export class TasksService {
           task.metadata.toAddress,
           user.walletAddress,
           task.metadata.amount,
-          userTask.startedAt,
         );
         break;
 
