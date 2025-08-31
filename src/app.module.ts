@@ -8,9 +8,9 @@ import { MiningModule } from './mining/mining.module'; // << فقط این impor
 import { SettingsModule } from './settings/settings.module';
 import { ExchangeModule } from './exchange/exchange.module';
 import { TasksModule } from './tasks/tasks.module';
-import { RolesGuard } from './auth/guards/roles.guard';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
+// import { RolesGuard } from './auth/guards/roles.guard';
+// import { APP_GUARD } from '@nestjs/core';
+// import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -46,14 +46,14 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
   // Controller و Provider های مربوط به mining از اینجا حذف می شوند!
   controllers: [],
   providers: [
-   {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+  //  {
+  //     provide: APP_GUARD,
+  //     useClass: JwtAuthGuard,
+  //   },
+  //   {
+  //     provide: APP_GUARD,
+  //     useClass: RolesGuard,
+  //   },
   ],
 })
 export class AppModule {}

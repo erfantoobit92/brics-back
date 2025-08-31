@@ -15,12 +15,12 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('user')
-@UseGuards(JwtAuthGuard, RolesGuard) // First check JWT, then check roles
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('admin/users')
-  @Roles('admin') // <-- Only users with the 'admin' role can access this
+  @Roles('admin')
+  @UseGuards(RolesGuard)
   findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
@@ -29,10 +29,9 @@ export class UserController {
   }
 
   @Roles('user')
-  @UseGuards(JwtAuthGuard) // این روت محافظت شده است
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    // req.user توسط JwtAuthGuard به ریکوئست اضافه شده
     return this.userService.findOne(req.user.sub);
   }
 
@@ -49,7 +48,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async connectWallet(
     @Req() req,
-    @Body() connectWalletDto: ConnectWalletDto, // Use the DTO
+    @Body() connectWalletDto: ConnectWalletDto,
   ) {
     const userId = req.user.id;
     const { walletAddress } = connectWalletDto;

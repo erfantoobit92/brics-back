@@ -1,18 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // app.useGlobalPipes(
-  //   new ValidationPipe({
-  //     whitelist: true, // پراپرتی‌های اضافه در body رو به صورت خودکار حذف می‌کنه
-  //     transform: true, // داده‌های ورودی رو به نوع DTO تبدیل می‌کنه (مثلا string رو به number)
-  //   }),
-  // );
+  app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors({
-    origin: '*', // یا آدرس ngrok مخصوص فرانت
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

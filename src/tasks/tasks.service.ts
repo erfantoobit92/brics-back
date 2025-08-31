@@ -195,8 +195,8 @@ export class TasksService {
           task.metadata.durationSeconds || 120,
         );
         break;
-          case TaskType.BOOST_TELEGRAM_CHANNEL:
-           if (!user.telegramId) {
+      case TaskType.BOOST_TELEGRAM_CHANNEL:
+        if (!user.telegramId) {
           throw new BadRequestException('User Telegram ID not found.');
         }
         isCompleted = await this.telegramService.hasUserBoostedChannel(
@@ -204,8 +204,10 @@ export class TasksService {
           user.telegramId,
         );
         if (!isCompleted) {
-          throw new BadRequestException('You have not boosted our channel yet.');
-        } 
+          throw new BadRequestException(
+            'You have not boosted our channel yet.',
+          );
+        }
         break;
       case TaskType.CONNECT_WALLET:
         // This logic is special. It's usually completed on the front-end by sending the wallet address.
@@ -327,7 +329,7 @@ export class TasksService {
   //   if (userTask && userTask.status === UserTaskStatus.COMPLETED) {
   //     throw new BadRequestException('You have already completed this task.');
   //   }
-    
+
   //   // 3. اگر کاربر تا حالا این تسک رو شروع نکرده بود، یک رکورد جدید براش بساز
   //   if (!userTask) {
   //     const userReference = new User();
@@ -341,4 +343,68 @@ export class TasksService {
   //   // 4. تسک رو تکمیل کن و جایزه رو بده (داخل یک تراکنش)
   //   return this.completeTaskTransaction(userTask, postStoryTask);
   // }
+
+  async handleStoryForwarded(telegramId: number) {
+    console.log(`Handling story forward for telegramId: ${telegramId}`);
+
+    // 2. Find user by telegramId
+    const user = await this.usersService.findByTelegramId(telegramId);
+    if (!user) {
+      throw new NotFoundException(
+        `User with telegramId ${telegramId} not found.`,
+      );
+    }
+
+    // 4. Find the specific "Post Story" task
+    const task = await this.taskRepository.findOneBy({
+      type: TaskType.POST_TELEGRAM_STORY,
+    });
+
+    if (!task) {
+      console.warn(`Active story task not found.`);
+      throw new NotFoundException(`Active story task not found.`);
+    }
+
+    // 5. Check if the user has already completed this task
+    let userTask = await this.userTaskRepository.findOneBy({
+      user: { id: user.id },
+      task: { id: task.id },
+    });
+
+    if (userTask && userTask.status === UserTaskStatus.COMPLETED) {
+      console.log(
+        `User ${user.id} has already completed task ${task.id}. No action taken.`,
+      );
+      // به ربات یک پیام موفقیت‌آمیز برمی‌گردونیم تا کاربر گیج نشه
+      return { message: 'Task already completed.' };
+    }
+
+    // If the userTask doesn't exist, create it
+    if (!userTask) {
+      userTask = this.userTaskRepository.create({
+        user: { id: user.id },
+        task: { id: task.id },
+        status: UserTaskStatus.PENDING, // Initial status
+      });
+    }
+
+    // 6. All checks passed! Award the reward using the transactional method.
+    console.log(
+      `All checks passed. Awarding story reward to user ${user.id} for task ${task.id}`,
+    );
+
+    // We need to attach the full user object for the transaction method
+    userTask.user = user;
+
+    const result = await this.completeTaskTransaction(userTask, task);
+
+    // (Optional) Send a success message back to the bot
+    // This can be done here or in the bot itself.
+    // For example, you could emit another event here that the bot listens to.
+
+    return {
+      message: 'Reward granted successfully.',
+      newBalance: result.newBalance,
+    };
+  }
 }

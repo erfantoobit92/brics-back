@@ -10,30 +10,23 @@ import {
 import { ExchangeService } from './exchange.service';
 import { ConvertDto } from './dto/convert.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard) // محافظت از تمام روت‌های این کنترلر با استراتژی JWT
 @Controller('exchange')
 export class ExchangeController {
   constructor(private readonly exchangeService: ExchangeService) {}
 
-  /**
-   * Endpoint برای دریافت وضعیت موجودی‌ها و نرخ تبدیل فعلی
-   */
+  @UseGuards(JwtAuthGuard)
+  @Roles('user')
   @Get('/status')
   getStatus(@Req() req) {
-    // req.user.id از JwtStrategy میاد که قبلاً درستش کردیم
     return this.exchangeService.getExchangeStatus(req.user.id);
   }
 
-  /**
-   * Endpoint برای انجام عملیات تبدیل ارز
-   */
+  @UseGuards(JwtAuthGuard)
+  @Roles('user')
   @Post('/convert')
-  convert(
-    @Req() req,
-    // ValidationPipe تضمین می‌کنه که body درخواست با ساختار ConvertDto مطابقت داره
-    @Body() convertDto: ConvertDto,
-  ) {
+  convert(@Req() req, @Body() convertDto: ConvertDto) {
     return this.exchangeService.convertCurrency(req.user.id, convertDto);
   }
 }

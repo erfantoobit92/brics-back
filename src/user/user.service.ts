@@ -10,7 +10,6 @@ import { Task } from 'src/tasks/entities/task.entity';
 import { UserTask, UserTaskStatus } from 'src/tasks/entities/user-task.entity';
 import { TaskType } from 'src/tasks/enum/task-type.enum';
 
-
 export interface PaginatedUsersResult {
   data: User[];
   total: number;
@@ -58,7 +57,7 @@ export class UserService {
     if (!user) {
       throw new Error('User not found');
     }
-    
+
     user.balance = Number(user.balance) + Number(amount);
 
     if (queryRunner) {
@@ -157,7 +156,7 @@ export class UserService {
     }
   }
 
-   async findAll(
+  async findAll(
     page: number = 1,
     limit: number = 10,
   ): Promise<PaginatedUsersResult> {
@@ -177,5 +176,11 @@ export class UserService {
       page: +page,
       limit: +limit,
     };
+  }
+
+  async findByTelegramId(telegramId: number): Promise<User | null> {
+    return this.usersRepository.findOne({ 
+      where: { telegramId: telegramId },
+    });
   }
 }

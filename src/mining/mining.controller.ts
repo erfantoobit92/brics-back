@@ -9,33 +9,38 @@ import {
 } from '@nestjs/common';
 import { MiningService } from './mining.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard)
 @Controller('mining')
 export class MiningController {
   constructor(private readonly miningService: MiningService) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Roles('user')
   @Get('/status')
   async getStatus(@Req() req) {
-    // اینجا از .sub استفاده می‌کنیم
     return this.miningService.getMiningStatus(req.user.sub);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles('user')
   @Post('/claim')
   async claim(@Req() req) {
-    // اینجا هم از .sub استفاده می‌کنیم
     return this.miningService.claimRewards(req.user.sub);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles('user')
   @Post('/upgrade/:userHardwareId')
   async upgrade(
     @Req() req,
     @Param('userHardwareId', ParseIntPipe) userHardwareId: number,
   ) {
-    // و اینجا هم از .sub استفاده می‌کنیم
     return this.miningService.upgradeHardware(req.user.sub, userHardwareId);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles('user')
   @Post('/buy/:hardwareId')
   async buyHardware(
     @Req() req,
@@ -45,8 +50,8 @@ export class MiningController {
   }
 
   // FOR TEST
-  @Get('/seed')
-  async seed() {
-    return this.miningService.seedInitialData();
-  }
+  // @Get('/seed')
+  // async seed() {
+  //   return this.miningService.seedInitialData();
+  // }
 }

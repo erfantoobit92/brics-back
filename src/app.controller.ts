@@ -17,28 +17,4 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  // --- اندپوینت جدید برای لاگ‌گیری ---
-  @Post('log')
-  logFromClient(@Body() logDto: LogDto) {
-    const { level, message, data } = logDto;
-    
-    // یک پیشوند اضافه می‌کنیم تا لاگ‌های فرانت‌اند مشخص باشن
-    const prefix = '[FRONTEND LOG]'; 
-    const logMessage = `${prefix} ${message}`;
-
-    switch (level) {
-      case 'error':
-        console.error(logMessage, data || '');
-        break;
-      case 'warn':
-        console.warn(logMessage, data || '');
-        break;
-      default:
-        console.log(logMessage, data || '');
-        break;
-    }
-    
-    // یک پاسخ ساده برمی‌گردونیم تا درخواست معلق نمونه
-    return { status: 'logged' };
-  }
 }
