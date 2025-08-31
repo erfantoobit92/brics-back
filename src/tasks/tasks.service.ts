@@ -9,7 +9,7 @@ import { Task } from './entities/task.entity';
 import { UserTask, UserTaskStatus } from './entities/user-task.entity';
 import { UserService } from 'src/user/user.service';
 import { TaskType } from './enum/task-type.enum';
-import { TonBlockchainService } from '../blockchain/ton.service'; // Assuming you create this service
+import { TonBlockchainService } from '../blockchain/ton.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 import { User } from 'src/user/user.entity';
 
@@ -22,8 +22,8 @@ export class TasksService {
     private readonly userTaskRepository: Repository<UserTask>,
     private readonly usersService: UserService,
     private readonly telegramService: TelegramService,
-    private readonly tonBlockchainService: TonBlockchainService, // Inject it
-    private readonly dataSource: DataSource, // For transactions
+    private readonly tonBlockchainService: TonBlockchainService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getTasksForUser(userId: number) {
@@ -58,7 +58,6 @@ export class TasksService {
     }
 
     if (!userTask) {
-      // Create reference entities instead of partial objects
       const userReference = new User();
       userReference.id = userId;
 
@@ -122,13 +121,8 @@ export class TasksService {
       throw new BadRequestException(
         'Task Type Failed. Please start the task first.',
       );
-      // Optional: allow re-trying if it failed before
-      // For now, let's keep it simple.
     }
 
-    // =======================================================
-    // THE DYNAMIC VALIDATION LOGIC HUB
-    // =======================================================
     const user = await this.usersService.findOne(userId); // Fetch full user details
     if (!user) {
       throw new NotFoundException('User not found for claim process.');
@@ -159,10 +153,10 @@ export class TasksService {
           throw new BadRequestException('User wallet address not connected.');
 
         isCompleted = await this.tonBlockchainService.verifyTonTransaction(
-          task.metadata.toAddress, // Project's wallet address
-          user.walletAddress, // User's connected wallet address
-          task.metadata.amount, // e.g., 2 (for 2 TON)
-          userTask.startedAt, // To prevent using old transactions
+          task.metadata.toAddress,
+          user.walletAddress,
+          task.metadata.amount,
+          userTask.startedAt,
         );
         break;
 
@@ -181,26 +175,12 @@ export class TasksService {
         }
         break;
 
-      // ... other complex validations will go here
-
-      // --- Impossible to verify via API, use timer ---
-      case TaskType.POST_TELEGRAM_STORY:
-        // Telegram API does not allow bots to check stories or profile names of users.
-        // The industry standard is to use a trust-based timer.
-        console.warn(
-          `Task type ${task.type} cannot be verified via API. Using timer fallback.`,
-        );
-        isCompleted = this.validateTimerBasedTask(
-          userTask,
-          task.metadata.durationSeconds || 120,
-        );
-        break;
       case TaskType.BOOST_TELEGRAM_CHANNEL:
         if (!user.telegramId) {
           throw new BadRequestException('User Telegram ID not found.');
         }
         isCompleted = await this.telegramService.hasUserBoostedChannel(
-          task.metadata.channelId, // e.g., '@my_channel'
+          task.metadata.channelId,
           user.telegramId,
         );
         if (!isCompleted) {
@@ -210,9 +190,6 @@ export class TasksService {
         }
         break;
       case TaskType.CONNECT_WALLET:
-        // This logic is special. It's usually completed on the front-end by sending the wallet address.
-        // Let's assume another endpoint handles this, or it's auto-completed.
-        // For now, we'll mark it as not claimable via this generic endpoint.
         throw new BadRequestException(
           'This task is completed automatically when you connect your wallet, not via the claim button.',
         );
@@ -260,17 +237,6 @@ export class TasksService {
       (new Date().getTime() - userTask.startedAt.getTime()) / 1000;
     return timeElapsed >= durationSeconds;
   }
-  // Placeholder for future Telegram validation
-  // private async validateTelegramJoin(userId: string, channelId: string): Promise<boolean> {
-  //   // 1. Get user's telegramId from our DB
-  //   // 2. Use Telegram Bot API (e.g., telegraf)
-  //   // 3. bot.telegram.getChatMember(channelId, user.telegramId)
-  //   // 4. Check if member status is 'member', 'administrator', or 'creator'
-  //   // 5. Return true/false
-  //   return false; // Placeholder
-  // }
-
-  // --- Transactional Reward Method ---
 
   private async completeTaskTransaction(userTask: UserTask, task: Task) {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -306,43 +272,6 @@ export class TasksService {
       await queryRunner.release();
     }
   }
-
-  //  async handlePostStoryCompletion(userId: number) {
-  //   // 1. تسک فعال "Post Story" رو از دیتابیس پیدا کن
-  //   const postStoryTask = await this.taskRepository.findOneBy({
-  //     type: TaskType.POST_TELEGRAM_STORY,
-  //     isActive: true,
-  //   });
-
-  //   if (!postStoryTask) {
-  //     throw new NotFoundException('The post story task is not currently active.');
-  //   }
-
-  //   // 2. چک کن که آیا کاربر قبلاً این تسک رو انجام داده یا نه
-  //   let userTask = await this.userTaskRepository.findOne({
-  //     where: {
-  //       user: { id: userId },
-  //       task: { id: postStoryTask.id },
-  //     },
-  //   });
-
-  //   if (userTask && userTask.status === UserTaskStatus.COMPLETED) {
-  //     throw new BadRequestException('You have already completed this task.');
-  //   }
-
-  //   // 3. اگر کاربر تا حالا این تسک رو شروع نکرده بود، یک رکورد جدید براش بساز
-  //   if (!userTask) {
-  //     const userReference = new User();
-  //     userReference.id = userId;
-  //     userTask = this.userTaskRepository.create({
-  //       user: userReference,
-  //       task: postStoryTask,
-  //     });
-  //   }
-
-  //   // 4. تسک رو تکمیل کن و جایزه رو بده (داخل یک تراکنش)
-  //   return this.completeTaskTransaction(userTask, postStoryTask);
-  // }
 
   async handleStoryForwarded(telegramId: number) {
     console.log(`Handling story forward for telegramId: ${telegramId}`);
@@ -388,19 +317,13 @@ export class TasksService {
       });
     }
 
-    // 6. All checks passed! Award the reward using the transactional method.
     console.log(
       `All checks passed. Awarding story reward to user ${user.id} for task ${task.id}`,
     );
 
-    // We need to attach the full user object for the transaction method
     userTask.user = user;
 
     const result = await this.completeTaskTransaction(userTask, task);
-
-    // (Optional) Send a success message back to the bot
-    // This can be done here or in the bot itself.
-    // For example, you could emit another event here that the bot listens to.
 
     return {
       message: 'Reward granted successfully.',

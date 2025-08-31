@@ -24,7 +24,6 @@ export class HardwareLevel {
   @Column({ type: 'numeric', precision: 20, scale: 8, default: 0 })
   miningRatePerHour: number;
 
-  // Cost to upgrade to the *next* level. Last level might have a cost of 0 or null.
   @Column({ type: 'numeric', precision: 20, scale: 2, default: 0 })
   upgradeCost: number;
 }

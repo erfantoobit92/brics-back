@@ -28,7 +28,7 @@ export class User {
   @Column({ nullable: true })
   lastName: string;
 
-  @Column({ type: 'text', nullable: true }) // از نوع text استفاده می‌کنیم چون URL ممکنه طولانی باشه
+  @Column({ type: 'text', nullable: true })
   photoUrl: string | null;
   
   @Column({ nullable: true, unique: true })
@@ -67,11 +67,9 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  // این فیلد ID معرف رو نگه میداره (اختیاری)
   @Column({ type: 'integer', nullable: true })
-  referrerId: number | null; // اسم رو عوض کردم که واضح‌تر باشه
+  referrerId: number | null; 
 
-  // ADD THESE NEW COLUMNS
   @Column({
     type: 'numeric',
     precision: 20,
@@ -87,14 +85,12 @@ export class User {
   })
   lastMiningInteraction: Date;
 
-  // ADD THIS RELATION
   @OneToMany(() => UserHardware, (hardware) => hardware.user)
   hardwares: UserHardware[];
 
   @OneToMany(() => UserTask, (userTask) => userTask.user)
   userTasks: UserTask[];
 
-  // ارتباط Many-to-One: هر کاربر (user) توسط یک نفر (referrer) معرفی شده
   @ManyToOne(
     () => User,
     (referrer) => referrer.referrals, // به TypeORM میگیم که طرف مقابل این ارتباط، فیلد 'referrals' است

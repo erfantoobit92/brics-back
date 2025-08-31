@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TelegramService } from './telegram.service';
 
 @Module({
-  imports: [ConfigModule], // To read BOT_TOKEN from .env
+  imports: [ConfigModule], 
   providers: [TelegramService],
-  exports: [TelegramService], // Export it to be used in TasksModule
+  exports: [TelegramService], 
 })
 export class TelegramModule {}

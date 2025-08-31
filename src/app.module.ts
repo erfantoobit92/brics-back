@@ -4,13 +4,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
-import { MiningModule } from './mining/mining.module'; // << فقط این import میمونه
+import { MiningModule } from './mining/mining.module';
 import { SettingsModule } from './settings/settings.module';
 import { ExchangeModule } from './exchange/exchange.module';
 import { TasksModule } from './tasks/tasks.module';
-// import { RolesGuard } from './auth/guards/roles.guard';
-// import { APP_GUARD } from '@nestjs/core';
-// import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -34,26 +31,15 @@ import { TasksModule } from './tasks/tasks.module';
       inject: [ConfigService],
     }),
 
-    // ماژول‌های برنامه شما در اینجا import می شوند
     AuthModule,
     UserModule,
     GameModule,
-    SettingsModule, // <<-- حتما این ماژول را قبل از ExchangeModule ایمپورت کن
+    SettingsModule,
     MiningModule,
     ExchangeModule,
     TasksModule,
   ],
-  // Controller و Provider های مربوط به mining از اینجا حذف می شوند!
   controllers: [],
-  providers: [
-  //  {
-  //     provide: APP_GUARD,
-  //     useClass: JwtAuthGuard,
-  //   },
-  //   {
-  //     provide: APP_GUARD,
-  //     useClass: RolesGuard,
-  //   },
-  ],
+  providers: [],
 })
 export class AppModule {}

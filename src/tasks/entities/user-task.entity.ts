@@ -1,16 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
-import { Task } from '../../tasks/entities/task.entity'; // Path to our new Task entity
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  Unique,
+} from 'typeorm';
+import { Task } from '../../tasks/entities/task.entity'; 
 import { User } from 'src/user/user.entity';
 
 export enum UserTaskStatus {
-  PENDING = 'PENDING',   // هنوز شروع نکرده
-  STARTED = 'STARTED',   // روی دکمه انجام کلیک کرده
-  COMPLETED = 'COMPLETED', // تسک رو با موفقیت انجام داده و جایزه رو گرفته
-  FAILED = 'FAILED',     // تلاش کرده ولی موفق نبوده
+  PENDING = 'PENDING',
+  STARTED = 'STARTED',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
 }
 
 @Entity('user_tasks')
-@Unique(['user', 'task']) // Each user can have only one entry per task
+@Unique(['user', 'task'])
 export class UserTask {
   @PrimaryGeneratedColumn('uuid')
   id: string;

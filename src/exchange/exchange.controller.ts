@@ -5,7 +5,6 @@ import {
   Body,
   UseGuards,
   Req,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ExchangeService } from './exchange.service';
 import { ConvertDto } from './dto/convert.dto';

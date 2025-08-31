@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TonClient, Address } from '@ton/ton';
-// import { getHttpEndpoint } from '@orbs-network/ton-access';
 
 @Injectable()
 export class TonBlockchainService {
@@ -22,14 +21,7 @@ export class TonBlockchainService {
     this.logger.log('TonClient initialized with a direct endpoint.');
   }
 
-  /**
-   * Verifies if a user has sent a specific amount of TON to the project wallet.
-   * @param projectWalletAddress The wallet address of your project.
-   * @param userWalletAddress The user's wallet address.
-   * @param requiredAmount The minimum amount in TON (e.g., 2).
-   * @param afterTimestamp The transaction must have occurred after this time.
-   * @returns true if a valid transaction is found.
-   */
+ 
   async verifyTonTransaction(
     projectWalletAddress: string,
     userWalletAddress: string,

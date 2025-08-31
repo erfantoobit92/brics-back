@@ -106,16 +106,13 @@ export class UserService {
     await queryRunner.startTransaction();
 
     try {
-      // 1. Update user's wallet address
       user.walletAddress = walletAddress;
       await queryRunner.manager.save(user);
 
-      // 2. Mark the "Connect Wallet" task as completed for this user
       const userTaskExists = await this.userTasksRepository.findOne({
         where: { user: { id: userId }, task: { id: connectWalletTask.id } },
       });
 
-      // Only give reward if they haven't somehow completed it before
       if (!userTaskExists) {
         const newUserTask = this.userTasksRepository.create({
           user: user,
@@ -126,7 +123,6 @@ export class UserService {
         });
         await queryRunner.manager.save(newUserTask);
 
-        // 3. Add the reward to the user's balance
         await this.addBalance(
           userId,
           connectWalletTask.rewardCoin,
@@ -166,7 +162,7 @@ export class UserService {
       skip: skip,
       take: limit,
       order: {
-        createdAt: 'DESC', // کاربران جدیدتر اول نمایش داده بشن
+        createdAt: 'DESC',
       },
     });
 

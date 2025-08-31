@@ -12,12 +12,12 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
     TypeOrmModule.forFeature([
       User,
-      Task, // <-- 3. Add Task here
+      Task,
       UserTask,
     ]),
   ],
   providers: [UserService],
   controllers: [UserController],
-  exports: [TypeOrmModule, UserService], // برای اینکه GameModule بتونه از User entity استفاده کنه
+  exports: [TypeOrmModule, UserService],
 })
 export class UserModule {}
