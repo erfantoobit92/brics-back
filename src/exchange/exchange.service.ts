@@ -37,6 +37,9 @@ export class ExchangeService {
       }
 
       if (direction === ConversionDirection.BALANCE_TO_BRICS) {
+        console.log('Number(user.balance)', Number(user.balance));
+        console.log('amount', amount);
+
         if (Number(user.balance) < amount) {
           throw new BadRequestException('Insufficient balance.');
         }

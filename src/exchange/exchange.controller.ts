@@ -19,13 +19,13 @@ export class ExchangeController {
   @Roles('user')
   @Get('/status')
   getStatus(@Req() req) {
-    return this.exchangeService.getExchangeStatus(req.user.id);
+    return this.exchangeService.getExchangeStatus(req.user.sub);
   }
 
   @UseGuards(JwtAuthGuard)
   @Roles('user')
   @Post('/convert')
   convert(@Req() req, @Body() convertDto: ConvertDto) {
-    return this.exchangeService.convertCurrency(req.user.id, convertDto);
+    return this.exchangeService.convertCurrency(req.user.sub, convertDto);
   }
 }
