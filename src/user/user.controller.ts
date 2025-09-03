@@ -20,7 +20,7 @@ export class UserController {
 
   @Get('admin/users')
   @Roles('admin')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,

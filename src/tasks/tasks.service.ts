@@ -273,7 +273,6 @@ export class TasksService {
   }
 
   async handleStoryForwarded(telegramId: number) {
-    console.log(`Handling story forward for telegramId: ${telegramId}`);
 
     // 2. Find user by telegramId
     const user = await this.usersService.findByTelegramId(telegramId);
@@ -300,9 +299,6 @@ export class TasksService {
     });
 
     if (userTask && userTask.status === UserTaskStatus.COMPLETED) {
-      console.log(
-        `User ${user.id} has already completed task ${task.id}. No action taken.`,
-      );
       // به ربات یک پیام موفقیت‌آمیز برمی‌گردونیم تا کاربر گیج نشه
       return { message: 'Task already completed.' };
     }
@@ -315,10 +311,6 @@ export class TasksService {
         status: UserTaskStatus.PENDING, // Initial status
       });
     }
-
-    console.log(
-      `All checks passed. Awarding story reward to user ${user.id} for task ${task.id}`,
-    );
 
     userTask.user = user;
 
