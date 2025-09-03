@@ -8,6 +8,7 @@ import { MiningModule } from './mining/mining.module';
 import { SettingsModule } from './settings/settings.module';
 import { ExchangeModule } from './exchange/exchange.module';
 import { TasksModule } from './tasks/tasks.module';
+import { AdminHardwaresModule } from './mining/admin/admin-hardwares.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { TasksModule } from './tasks/tasks.module';
     GameModule,
     SettingsModule,
     MiningModule,
+    AdminHardwaresModule,
     ExchangeModule,
     TasksModule,
   ],
