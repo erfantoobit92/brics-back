@@ -7,6 +7,7 @@ import { UserTask } from './entities/user-task.entity';
 import { UserModule } from 'src/user/user.module';
 import { TelegramModule } from '../telegram/telegram.module';
 import { BlockchainModule } from '../blockchain/blockchain.module';
+import { AdminTasksService } from './admin/admin-tasks.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { BlockchainModule } from '../blockchain/blockchain.module';
     BlockchainModule,
   ],
   controllers: [TasksController],
-  providers: [TasksService],
+  providers: [TasksService, AdminTasksService],
 })
 export class TasksModule {}
