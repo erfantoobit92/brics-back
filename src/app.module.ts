@@ -10,6 +10,7 @@ import { ExchangeModule } from './exchange/exchange.module';
 import { TasksModule } from './tasks/tasks.module';
 import { AdminHardwaresModule } from './mining/admin/admin-hardwares.module';
 import { AdminSettingsModule } from './settings/admin/admin-settings.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AdminSettingsModule } from './settings/admin/admin-settings.module';
     ExchangeModule,
     AdminSettingsModule,
     TasksModule,
+    StatsModule,
   ],
   controllers: [],
   providers: [],
