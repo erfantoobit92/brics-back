@@ -175,8 +175,23 @@ export class UserService {
   }
 
   async findByTelegramId(telegramId: number): Promise<User | null> {
-    return this.usersRepository.findOne({ 
+    return this.usersRepository.findOne({
       where: { telegramId: telegramId },
+    });
+  }
+
+  async findCompletedTasksForUser(userId: number): Promise<UserTask[]> {
+    return this.userTasksRepository.find({
+      where: {
+        user: { id: userId }, // فیلتر بر اساس ID کاربر
+        status: UserTaskStatus.COMPLETED, // فیلتر بر اساس وضعیت
+      },
+      relations: {
+        task: true, // مهم: اطلاعات کامل تسک رو هم باهاش JOIN می‌کنه
+      },
+      order: {
+        completedAt: 'DESC', // تسک‌هایی که اخیراً انجام شدن بالاتر باشن
+      },
     });
   }
 }

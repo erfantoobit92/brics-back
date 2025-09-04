@@ -20,7 +20,7 @@ export class AdminTasksService {
 
   // گرفتن همه تسک‌ها (بدون پجینیشن، برای پنل ادمین معمولا اوکیه)
   async findAll(): Promise<Task[]> {
-    return this.taskRepository.find({ order: { title: 'ASC' } });
+    return this.taskRepository.find();
   }
 
   // پیدا کردن یک تسک با ID

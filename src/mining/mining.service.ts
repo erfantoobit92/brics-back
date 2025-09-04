@@ -330,243 +330,243 @@ export class MiningService {
     return totalRate;
   }
 
-  async seedInitialData() {
-    const hardwareCount = await this.hardwareRepository.count();
-    const taskCount = await this.taskRepository.count();
+  // async seedInitialData() {
+  //   const hardwareCount = await this.hardwareRepository.count();
+  //   const taskCount = await this.taskRepository.count();
 
-    if (hardwareCount > 0 && taskCount > 0) {
-      return { message: 'Database is already seeded.' };
-    }
+  //   if (hardwareCount > 0 && taskCount > 0) {
+  //     return { message: 'Database is already seeded.' };
+  //   }
 
-    await this.entityManager.transaction(async (manager) => {
-      const hardwareRepo = manager.getRepository(Hardware);
-      const levelRepo = manager.getRepository(HardwareLevel);
-      const taskRepo = manager.getRepository(Task);
+  //   await this.entityManager.transaction(async (manager) => {
+  //     const hardwareRepo = manager.getRepository(Hardware);
+  //     const levelRepo = manager.getRepository(HardwareLevel);
+  //     const taskRepo = manager.getRepository(Task);
 
-      // ================= Hardware =================
-      const cpu = hardwareRepo.create({
-        name: 'Basic CPU',
-        description: 'A simple processor for beginner miners.',
-      });
-      const gpu = hardwareRepo.create({
-        name: 'Standard GPU',
-        description: 'A mid-range GPU capable of decent mining speed.',
-      });
-      const ram = hardwareRepo.create({
-        name: 'DDR5 RAM',
-        description: 'High-speed RAM that optimizes mining computations.',
-      });
-      const ssd = hardwareRepo.create({
-        name: 'NVMe SSD',
-        description:
-          'Ultra-fast SSD that reduces latency and boosts efficiency.',
-      });
-      const quantumChip = hardwareRepo.create({
-        name: 'Quantum Chip',
-        description: 'Next-gen hardware with insane mining capability 🚀',
-      });
+  //     // ================= Hardware =================
+  //     const cpu = hardwareRepo.create({
+  //       name: 'Basic CPU',
+  //       description: 'A simple processor for beginner miners.',
+  //     });
+  //     const gpu = hardwareRepo.create({
+  //       name: 'Standard GPU',
+  //       description: 'A mid-range GPU capable of decent mining speed.',
+  //     });
+  //     const ram = hardwareRepo.create({
+  //       name: 'DDR5 RAM',
+  //       description: 'High-speed RAM that optimizes mining computations.',
+  //     });
+  //     const ssd = hardwareRepo.create({
+  //       name: 'NVMe SSD',
+  //       description:
+  //         'Ultra-fast SSD that reduces latency and boosts efficiency.',
+  //     });
+  //     const quantumChip = hardwareRepo.create({
+  //       name: 'Quantum Chip',
+  //       description: 'Next-gen hardware with insane mining capability 🚀',
+  //     });
 
-      await hardwareRepo.save([cpu, gpu, ram, ssd, quantumChip]);
+  //     await hardwareRepo.save([cpu, gpu, ram, ssd, quantumChip]);
 
-      // Levels
-      await levelRepo.save([
-        {
-          hardware: cpu,
-          level: 1,
-          miningRatePerHour: 0.0001,
-          upgradeCost: 100,
-        },
-        {
-          hardware: cpu,
-          level: 2,
-          miningRatePerHour: 0.00025,
-          upgradeCost: 250,
-        },
-        { hardware: cpu, level: 3, miningRatePerHour: 0.0005, upgradeCost: 0 },
+  //     // Levels
+  //     await levelRepo.save([
+  //       {
+  //         hardware: cpu,
+  //         level: 1,
+  //         miningRatePerHour: 0.0001,
+  //         upgradeCost: 100,
+  //       },
+  //       {
+  //         hardware: cpu,
+  //         level: 2,
+  //         miningRatePerHour: 0.00025,
+  //         upgradeCost: 250,
+  //       },
+  //       { hardware: cpu, level: 3, miningRatePerHour: 0.0005, upgradeCost: 0 },
 
-        {
-          hardware: gpu,
-          level: 1,
-          miningRatePerHour: 0.002,
-          upgradeCost: 1500,
-        },
-        {
-          hardware: gpu,
-          level: 2,
-          miningRatePerHour: 0.0045,
-          upgradeCost: 4000,
-        },
-        { hardware: gpu, level: 3, miningRatePerHour: 0.01, upgradeCost: 0 },
+  //       {
+  //         hardware: gpu,
+  //         level: 1,
+  //         miningRatePerHour: 0.002,
+  //         upgradeCost: 1500,
+  //       },
+  //       {
+  //         hardware: gpu,
+  //         level: 2,
+  //         miningRatePerHour: 0.0045,
+  //         upgradeCost: 4000,
+  //       },
+  //       { hardware: gpu, level: 3, miningRatePerHour: 0.01, upgradeCost: 0 },
 
-        {
-          hardware: ram,
-          level: 1,
-          miningRatePerHour: 0.0005,
-          upgradeCost: 800,
-        },
-        {
-          hardware: ram,
-          level: 2,
-          miningRatePerHour: 0.0012,
-          upgradeCost: 2000,
-        },
-        { hardware: ram, level: 3, miningRatePerHour: 0.0025, upgradeCost: 0 },
+  //       {
+  //         hardware: ram,
+  //         level: 1,
+  //         miningRatePerHour: 0.0005,
+  //         upgradeCost: 800,
+  //       },
+  //       {
+  //         hardware: ram,
+  //         level: 2,
+  //         miningRatePerHour: 0.0012,
+  //         upgradeCost: 2000,
+  //       },
+  //       { hardware: ram, level: 3, miningRatePerHour: 0.0025, upgradeCost: 0 },
 
-        {
-          hardware: ssd,
-          level: 1,
-          miningRatePerHour: 0.001,
-          upgradeCost: 1200,
-        },
-        {
-          hardware: ssd,
-          level: 2,
-          miningRatePerHour: 0.0025,
-          upgradeCost: 3500,
-        },
-        { hardware: ssd, level: 3, miningRatePerHour: 0.005, upgradeCost: 0 },
+  //       {
+  //         hardware: ssd,
+  //         level: 1,
+  //         miningRatePerHour: 0.001,
+  //         upgradeCost: 1200,
+  //       },
+  //       {
+  //         hardware: ssd,
+  //         level: 2,
+  //         miningRatePerHour: 0.0025,
+  //         upgradeCost: 3500,
+  //       },
+  //       { hardware: ssd, level: 3, miningRatePerHour: 0.005, upgradeCost: 0 },
 
-        {
-          hardware: quantumChip,
-          level: 1,
-          miningRatePerHour: 0.02,
-          upgradeCost: 50000,
-        },
-        {
-          hardware: quantumChip,
-          level: 2,
-          miningRatePerHour: 0.05,
-          upgradeCost: 150000,
-        },
-        {
-          hardware: quantumChip,
-          level: 3,
-          miningRatePerHour: 0.1,
-          upgradeCost: 0,
-        },
-      ]);
+  //       {
+  //         hardware: quantumChip,
+  //         level: 1,
+  //         miningRatePerHour: 0.02,
+  //         upgradeCost: 50000,
+  //       },
+  //       {
+  //         hardware: quantumChip,
+  //         level: 2,
+  //         miningRatePerHour: 0.05,
+  //         upgradeCost: 150000,
+  //       },
+  //       {
+  //         hardware: quantumChip,
+  //         level: 3,
+  //         miningRatePerHour: 0.1,
+  //         upgradeCost: 0,
+  //       },
+  //     ]);
 
-      // ================= Tasks =================
-      const tasksData = [
-        {
-          title: 'Visit Our Official Website',
-          description:
-            'Spend at least 60 seconds on our website to learn more about the project.',
-          rewardCoin: 1000,
-          type: TaskType.VISIT_WEBSITE,
-          metadata: {
-            url: 'https://www.bricstrade.net/en',
-            durationSeconds: 60,
-          },
-        },
-        {
-          title: 'Follow Us on X (Twitter)',
-          description:
-            'Stay updated with our latest news and announcements on X.',
-          rewardCoin: 2000,
-          type: TaskType.FOLLOW_SOCIAL,
-          metadata: { url: 'https://x.com/your_profile', durationSeconds: 60 },
-        },
-        {
-          title: 'Follow Us on Instagram',
-          description: 'Follow Instagram Page And Get Reward.',
-          rewardCoin: 2000,
-          type: TaskType.FOLLOW_SOCIAL,
-          metadata: {
-            url: 'https://instagram.com/erfun_hasanzde',
-            durationSeconds: 60,
-          },
-        },
-        {
-          title: 'Watch Our Tutorial on YouTube',
-          description:
-            'Watch our 5-minute tutorial to understand all the features.',
-          rewardCoin: 3000,
-          type: TaskType.WATCH_YOUTUBE,
-          metadata: {
-            url: 'https://youtube.com/watch?v=your_video_id',
-            durationSeconds: 300,
-          },
-        },
-        {
-          title: 'Join Our Telegram Channel',
-          description: 'Be part of our community and get exclusive updates.',
-          rewardCoin: 2500,
-          type: TaskType.JOIN_TELEGRAM_CHANNEL,
-          metadata: { channelId: '@bricsnews' },
-        },
-        {
-          title: 'Add Our Logo to Your Name',
-          description:
-            'Add our official logo (BricsTrade) to your Telegram name to show your support!',
-          rewardCoin: 5000,
-          type: TaskType.ADD_LOGO_TO_PROFILE_NAME,
-          metadata: { logo: '(BricsTrade)' },
-        },
-        {
-          title: 'Connect Your TON Wallet',
-          description:
-            'Connect your wallet to enable advanced features and future airdrops.',
-          rewardCoin: 15000,
-          type: TaskType.CONNECT_WALLET,
-          metadata: {},
-        },
-        {
-          title: 'Make a 0.2 TON Transaction',
-          description:
-            'Support the project by sending 0.2 TON to our community wallet.',
-          rewardCoin: 10000,
-          type: TaskType.ON_CHAIN_TRANSACTION,
-          metadata: {
-            network: 'TON',
-            amount: 0.2,
-            toAddress: 'UQAflnSGskn-9u1WfKzQKQvlj6B2Gg9P23_Bup7Li3JWnUG3',
-          },
-        },
-        {
-          title: 'Boost Our Telegram Channel',
-          description:
-            'Support our community with your Telegram Premium boost and earn a huge reward!',
-          rewardCoin: 25000,
-          type: TaskType.BOOST_TELEGRAM_CHANNEL,
-          metadata: {
-            channelUrl: 'https://t.me/bricsnews?boost',
-            durationSeconds: 180,
-          },
-        },
-        {
-          title: 'Add Our Token to Your Wallet',
-          description:
-            'Make our token official in your wallet to easily track its value.',
-          rewardCoin: 5000,
-          type: TaskType.ADD_TOKEN_TO_WALLET,
-          metadata: {
-            networkName: 'TON Mainnet',
-            tokenAddress: '0x278a5B50c34506bc8e15C8567136292c30C92CD1',
-            tokenSymbol: 'Brics Trade (Bct)',
-            tokenDecimals: 9,
-            durationSeconds: 90,
-          },
-        },
-        {
-          title: 'Post a Story About Us',
-          description: 'Share our app with your friends in a Telegram story.',
-          rewardCoin: 7000,
-          type: TaskType.POST_TELEGRAM_STORY,
-          metadata: { durationSeconds: 120 },
-        },
-      ];
+  //     // ================= Tasks =================
+  //     const tasksData = [
+  //       {
+  //         title: 'Visit Our Official Website',
+  //         description:
+  //           'Spend at least 60 seconds on our website to learn more about the project.',
+  //         rewardCoin: 1000,
+  //         type: TaskType.VISIT_WEBSITE,
+  //         metadata: {
+  //           url: 'https://www.bricstrade.net/en',
+  //           durationSeconds: 60,
+  //         },
+  //       },
+  //       {
+  //         title: 'Follow Us on X (Twitter)',
+  //         description:
+  //           'Stay updated with our latest news and announcements on X.',
+  //         rewardCoin: 2000,
+  //         type: TaskType.FOLLOW_SOCIAL,
+  //         metadata: { url: 'https://x.com/your_profile', durationSeconds: 60 },
+  //       },
+  //       {
+  //         title: 'Follow Us on Instagram',
+  //         description: 'Follow Instagram Page And Get Reward.',
+  //         rewardCoin: 2000,
+  //         type: TaskType.FOLLOW_SOCIAL,
+  //         metadata: {
+  //           url: 'https://instagram.com/erfun_hasanzde',
+  //           durationSeconds: 60,
+  //         },
+  //       },
+  //       {
+  //         title: 'Watch Our Tutorial on YouTube',
+  //         description:
+  //           'Watch our 5-minute tutorial to understand all the features.',
+  //         rewardCoin: 3000,
+  //         type: TaskType.WATCH_YOUTUBE,
+  //         metadata: {
+  //           url: 'https://youtube.com/watch?v=your_video_id',
+  //           durationSeconds: 300,
+  //         },
+  //       },
+  //       {
+  //         title: 'Join Our Telegram Channel',
+  //         description: 'Be part of our community and get exclusive updates.',
+  //         rewardCoin: 2500,
+  //         type: TaskType.JOIN_TELEGRAM_CHANNEL,
+  //         metadata: { channelId: '@bricsnews' },
+  //       },
+  //       {
+  //         title: 'Add Our Logo to Your Name',
+  //         description:
+  //           'Add our official logo (BricsTrade) to your Telegram name to show your support!',
+  //         rewardCoin: 5000,
+  //         type: TaskType.ADD_LOGO_TO_PROFILE_NAME,
+  //         metadata: { logo: '(BricsTrade)' },
+  //       },
+  //       {
+  //         title: 'Connect Your TON Wallet',
+  //         description:
+  //           'Connect your wallet to enable advanced features and future airdrops.',
+  //         rewardCoin: 15000,
+  //         type: TaskType.CONNECT_WALLET,
+  //         metadata: {},
+  //       },
+  //       {
+  //         title: 'Make a 0.2 TON Transaction',
+  //         description:
+  //           'Support the project by sending 0.2 TON to our community wallet.',
+  //         rewardCoin: 10000,
+  //         type: TaskType.ON_CHAIN_TRANSACTION,
+  //         metadata: {
+  //           network: 'TON',
+  //           amount: 0.2,
+  //           toAddress: 'UQAflnSGskn-9u1WfKzQKQvlj6B2Gg9P23_Bup7Li3JWnUG3',
+  //         },
+  //       },
+  //       {
+  //         title: 'Boost Our Telegram Channel',
+  //         description:
+  //           'Support our community with your Telegram Premium boost and earn a huge reward!',
+  //         rewardCoin: 25000,
+  //         type: TaskType.BOOST_TELEGRAM_CHANNEL,
+  //         metadata: {
+  //           channelUrl: 'https://t.me/bricsnews?boost',
+  //           durationSeconds: 180,
+  //         },
+  //       },
+  //       {
+  //         title: 'Add Our Token to Your Wallet',
+  //         description:
+  //           'Make our token official in your wallet to easily track its value.',
+  //         rewardCoin: 5000,
+  //         type: TaskType.ADD_TOKEN_TO_WALLET,
+  //         metadata: {
+  //           networkName: 'TON Mainnet',
+  //           tokenAddress: '0x278a5B50c34506bc8e15C8567136292c30C92CD1',
+  //           tokenSymbol: 'Brics Trade (Bct)',
+  //           tokenDecimals: 9,
+  //           durationSeconds: 90,
+  //         },
+  //       },
+  //       {
+  //         title: 'Post a Story About Us',
+  //         description: 'Share our app with your friends in a Telegram story.',
+  //         rewardCoin: 7000,
+  //         type: TaskType.POST_TELEGRAM_STORY,
+  //         metadata: { durationSeconds: 120 },
+  //       },
+  //     ];
 
-      for (const taskData of tasksData) {
-        const existing = await taskRepo.findOne({
-          where: { title: taskData.title },
-        });
-        if (!existing) {
-          await taskRepo.save(taskRepo.create(taskData));
-        }
-      }
-    });
+  //     for (const taskData of tasksData) {
+  //       const existing = await taskRepo.findOne({
+  //         where: { title: taskData.title },
+  //       });
+  //       if (!existing) {
+  //         await taskRepo.save(taskRepo.create(taskData));
+  //       }
+  //     }
+  //   });
 
-    return { message: 'Seeding completed successfully!' };
-  }
+  //   return { message: 'Seeding completed successfully!' };
+  // }
 }

@@ -35,7 +35,6 @@ export class AdminHardwaresService {
     // استفاده از query builder برای گرفتن تعداد levels
     return this.hardwareRepository.createQueryBuilder('hardware')
       .loadRelationCountAndMap('hardware.levelsCount', 'hardware.levels')
-      .orderBy('hardware.name', 'ASC')
       .getMany();
   }
 

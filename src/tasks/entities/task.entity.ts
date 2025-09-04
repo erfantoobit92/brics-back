@@ -6,11 +6,11 @@ export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  title: string;
+  @Column({ type: 'jsonb', default: {} })
+  title: Record<string, any>;
 
-  @Column({ nullable: true })
-  description: string;
+  @Column({ type: 'jsonb', default: {} })
+  description: Record<string, any>;
 
   @Column({ type: 'bigint' })
   rewardCoin: number;

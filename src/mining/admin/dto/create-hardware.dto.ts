@@ -1,11 +1,36 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
+import { DeepPartial } from 'typeorm';
 
-export class CreateHardwareDto {
+export class TranslatableStringDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  en: string;
 
   @IsString()
-  @IsOptional()
-  description?: string;
+  @IsNotEmpty()
+  fa: string;
+
+  @IsString()
+  @IsNotEmpty()
+  ar: string;
+
+  @IsString()
+  @IsNotEmpty()
+  zh: string;
+}
+
+export class CreateHardwareDto {
+  @ValidateNested()
+  @Type(() => TranslatableStringDto)
+  name: TranslatableStringDto;
+
+  @ValidateNested()
+  @Type(() => TranslatableStringDto)
+  description?: TranslatableStringDto;
 }

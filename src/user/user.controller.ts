@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseUUIDPipe,
   Post,
   Query,
   Req,
@@ -21,11 +23,15 @@ export class UserController {
   @Get('admin/users')
   @Roles('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-  ) {
+  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
     return this.userService.findAll(page, limit);
+  }
+
+  @Get('admin/users/:id/completed-tasks')
+  @Roles('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  getCompletedTasks(@Param('id') id: number) {
+    return this.userService.findCompletedTasksForUser(id);
   }
 
   @Roles('user')
@@ -46,10 +52,7 @@ export class UserController {
   @Roles('user')
   @Post('connect-wallet')
   @UseGuards(JwtAuthGuard)
-  async connectWallet(
-    @Req() req,
-    @Body() connectWalletDto: ConnectWalletDto,
-  ) {
+  async connectWallet(@Req() req, @Body() connectWalletDto: ConnectWalletDto) {
     const userId = req.user.id;
     const { walletAddress } = connectWalletDto;
     return this.userService.handleWalletConnection(userId, walletAddress);

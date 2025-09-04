@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -7,17 +8,19 @@ import {
   IsOptional,
   IsBoolean,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { TranslatableStringDto } from 'src/mining/admin/dto/create-hardware.dto';
 import { TaskType } from 'src/tasks/enum/task-type.enum';
 
 export class CreateTaskDto {
-  @IsString()
-  @IsNotEmpty()
-  title: string;
+  @ValidateNested()
+  @Type(() => TranslatableStringDto)
+  title: TranslatableStringDto;
 
-  @IsString()
-  @IsOptional()
-  description?: string;
+  @ValidateNested()
+  @Type(() => TranslatableStringDto)
+  description?: TranslatableStringDto;
 
   @IsNumber()
   @Min(0)

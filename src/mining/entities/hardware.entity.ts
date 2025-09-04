@@ -7,11 +7,11 @@ export class Hardware {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  name: string;
+  @Column({ type: 'jsonb', default: {} })
+  name: Record<string, any>;
 
-  @Column({ type: 'text', nullable: true })
-  description: string;
+  @Column({ type: 'jsonb', default: {} })
+  description: Record<string, any>;
 
   @OneToMany(() => HardwareLevel, (level) => level.hardware)
   levels: HardwareLevel[];
