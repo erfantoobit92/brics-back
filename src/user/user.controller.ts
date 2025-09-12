@@ -53,7 +53,7 @@ export class UserController {
   @Post('connect-wallet')
   @UseGuards(JwtAuthGuard)
   async connectWallet(@Req() req, @Body() connectWalletDto: ConnectWalletDto) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const { walletAddress } = connectWalletDto;
     return this.userService.handleWalletConnection(userId, walletAddress);
   }

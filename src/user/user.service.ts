@@ -49,6 +49,7 @@ export class UserService {
       firstName: ref.firstName,
       lastName: ref.firstName,
       username: ref.username,
+      rewarded: ref.isPremium ? 3000 : 1000,
     }));
   }
 
@@ -69,6 +70,8 @@ export class UserService {
 
   async handleWalletConnection(userId: number, walletAddress: string) {
     // Check if another user has already taken this wallet address
+    console.log(userId);
+
     const existingUserWithWallet = await this.usersRepository.findOneBy({
       walletAddress,
     });
@@ -84,8 +87,8 @@ export class UserService {
 
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) throw new NotFoundException('User not found');
-    if (user.walletAddress)
-      throw new BadRequestException('Wallet already connected.');
+    // if (user.walletAddress)
+    //   throw new BadRequestException('Wallet already connected.');
 
     // Find the "Connect Wallet" task configuration from the tasks table
     const connectWalletTask = await this.tasksRepository.findOneBy({
@@ -94,11 +97,14 @@ export class UserService {
     });
 
     if (!connectWalletTask) {
-      // If there is no such task, just save the wallet and return
-      user.walletAddress = walletAddress;
-      await this.usersRepository.save(user);
-      return { message: 'Wallet connected successfully.' };
+      throw new NotFoundException('Task not found');
     }
+    
+    //   // If there is no such task, just save the wallet and return
+    //   user.walletAddress = walletAddress;
+    //   await this.usersRepository.save(user);
+    //   return { message: 'Wallet connected successfully.' };
+    // }
 
     // --- Start Transaction ---
     const queryRunner = this.dataSource.createQueryRunner();

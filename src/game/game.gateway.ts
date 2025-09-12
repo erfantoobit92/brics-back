@@ -14,7 +14,7 @@ import { WsJwtAuthGuard } from '../auth/ws-jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt'; // <--- این رو اضافه کن
 
 // گارد رو اینجا نگه می‌داریم تا از هندلرهای پیام مثل 'tap' محافظت کنه
-@UseGuards(WsJwtAuthGuard) 
+@UseGuards(WsJwtAuthGuard)
 @WebSocketGateway({ cors: { origin: '*' } })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -45,18 +45,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // 3. اگر توکن معتبر بود، payload رو به آبجکت کلاینت اضافه می‌کنیم
       //    تا در بقیه جاها (مثل handleTap) هم در دسترس باشه
       client['user'] = payload;
-      
+
       console.log(`Client connected: ${client.id}, UserID: ${payload.sub}`);
 
       // 4. حالا با خیال راحت از userId استفاده می‌کنیم
       const userId = payload.sub;
       const initialState = await this.gameService.getUserState(userId);
-      
-      client.emit('initial_state', initialState);
 
+      client.emit('initial_state', initialState);
     } catch (error) {
       // اگر توکن نامعتبر بود یا هر خطای دیگه‌ای رخ داد
-      console.error(`Authentication failed for client ${client.id}:`, error.message);
+      console.error(
+        `Authentication failed for client ${client.id}:`,
+        error.message,
+      );
       // اتصال کلاینت نامعتبر رو فوراً قطع می‌کنیم
       client.disconnect(true);
     }

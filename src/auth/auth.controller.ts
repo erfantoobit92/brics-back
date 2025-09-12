@@ -2,9 +2,18 @@ import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { Public } from './decorators/public.decorator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 class LoginDto {
+  @IsString()
   initData: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isPremium: boolean;
+
+  @IsOptional()
+  @IsString()
   startParam?: string;
 }
 
@@ -16,7 +25,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto.initData, loginDto.startParam);
+    return this.authService.login(loginDto);
   }
 
   @Public()

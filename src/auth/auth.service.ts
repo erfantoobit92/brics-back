@@ -8,15 +8,15 @@ import { createHmac } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Hardware } from 'src/mining/entities/hardware.entity';
-import { UserHardware } from 'src/mining/entities/user-hardware.entity';
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { ConfigService } from '@nestjs/config';
+import { Hardware } from 'src/mining/entities/hardware.entity';
+import { UserHardware } from 'src/mining/entities/user-hardware.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
+      @InjectRepository(User)
     private usersRepository: Repository<User>,
     @InjectRepository(Hardware)
     private hardwareRepository: Repository<Hardware>,
@@ -24,7 +24,7 @@ export class AuthService {
     private userHardwareRepository: Repository<UserHardware>,
     private jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+    ) {}
 
   async validateTelegramData(initData: string): Promise<any> {
     // 1. اول توکن ربات رو بگیر
@@ -77,8 +77,20 @@ export class AuthService {
     }
   }
 
-  async login(initData: string, startParam?: string) {
+  async login({
+    initData,
+    isPremium,
+    startParam,
+  }: {
+    initData: string;
+    isPremium: boolean;
+    startParam?: string;
+  }) {
+    console.log(startParam);
+    console.log(isPremium);
+    
     const userData = await this.validateTelegramData(initData);
+    console.log(userData);
 
     const referrerTelegramId = startParam ? parseInt(startParam, 10) : null;
 
@@ -92,6 +104,7 @@ export class AuthService {
       user.lastName = userData.last_name;
       user.username = userData.username;
       user.photoUrl = userData.photo_url; // photo_url از دیتای تلگرام میاد
+      user.isPremium = isPremium ?? false;
       await this.usersRepository.save(user);
     }
     // اگر کاربر وجود نداشت (کاربر جدید)
@@ -102,18 +115,23 @@ export class AuthService {
         firstName: userData.first_name,
         lastName: userData.last_name,
         photoUrl: userData.photo_url, // موقع ساختن هم عکس رو ذخیره کن
-        balance: 5000,
+        balance: isPremium ? 20000 : 5000,
         lastMiningInteraction: new Date(),
+        isPremium: isPremium ?? false,
       });
 
+      console.log('referrerTelegramId ',referrerTelegramId);
+      console.log('referrerTelegramId ',user.telegramId);
+      
       if (referrerTelegramId) {
         const referrer = await this.usersRepository.findOne({
           where: { telegramId: referrerTelegramId },
         });
+        console.log('referrerTelegramId ',user.telegramId);
         if (referrer && referrer.telegramId !== user.telegramId) {
           user.referrerId = referrer.id;
           const currentReferrerBalance = Number(referrer.balance);
-          const bonus = Number(1000);
+          const bonus = Number(isPremium ? 3000 : 1000);
           referrer.balance = currentReferrerBalance + bonus;
           await this.usersRepository.save(referrer); // <--- از ریپازیتوری معمولی استفاده کن
         }

@@ -90,7 +90,7 @@ export class TasksService {
 
     let userTask = await this.userTaskRepository.findOne({
       where: { user: { id: userId }, task: { id: taskId } },
-      relations: ['task', 'user'], // Load user relation to get telegram_id and wallet_address
+      relations: ['task', 'user'], 
     });
 
     if (!userTask) {

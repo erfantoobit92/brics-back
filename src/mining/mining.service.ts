@@ -13,7 +13,6 @@ import { TaskType } from 'src/tasks/enum/task-type.enum';
 import { Task } from 'src/tasks/entities/task.entity';
 import { MAX_OFFLINE_MINING_SECONDS } from 'src/constants';
 
-
 @Injectable()
 export class MiningService {
   constructor(
@@ -122,6 +121,9 @@ export class MiningService {
             nextLevelUpgradeCost: nextLevelInfo
               ? Number(nextLevelInfo.upgradeCost)
               : null,
+            nextLevelMiningRatePerHour: nextLevelInfo
+              ? Number(nextLevelInfo.miningRatePerHour)
+              : 0,
             isMaxLevel: !nextLevelInfo,
           };
         } else {
@@ -163,6 +165,8 @@ export class MiningService {
   }
 
   async upgradeHardware(userId: number, userHardwareId: number) {
+    console.log(userId, userHardwareId);
+
     return this.entityManager.transaction(async (manager) => {
       // 1. آپدیت وضعیت و گرفتن کاربر جدید
       const { user: updatedUser, totalMiningRatePerHour } =
@@ -170,12 +174,19 @@ export class MiningService {
 
       // 2. منطق آپگرید
       const userHardware = await manager.findOne(UserHardware, {
-        where: { id: userHardwareId, user: { id: userId } },
+        where: { hardware: { id: userHardwareId }, user: { id: userId } },
         relations: ['hardware'],
       });
       if (!userHardware) {
         throw new NotFoundException('User hardware not found.');
       }
+
+      console.log(userHardware);
+
+      console.log({
+        hardware: { id: userHardware.hardware.id },
+        level: userHardware.level + 1,
+      });
 
       const nextLevelInfo = await manager.getRepository(HardwareLevel).findOne({
         where: {

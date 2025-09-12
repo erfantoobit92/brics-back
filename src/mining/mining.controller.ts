@@ -46,7 +46,7 @@ export class MiningController {
     @Req() req,
     @Param('hardwareId', ParseIntPipe) hardwareId: number,
   ) {
-    return this.miningService.buyHardware(req.user.id, hardwareId);
+    return this.miningService.buyHardware(req.user.sub, hardwareId);
   }
 
   // FOR TEST

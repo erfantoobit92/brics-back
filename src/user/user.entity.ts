@@ -30,7 +30,7 @@ export class User {
 
   @Column({ type: 'text', nullable: true })
   photoUrl: string | null;
-  
+
   @Column({ nullable: true, unique: true })
   walletAddress: string;
 
@@ -68,7 +68,10 @@ export class User {
   createdAt: Date;
 
   @Column({ type: 'integer', nullable: true })
-  referrerId: number | null; 
+  referrerId: number | null;
+
+  @Column({ type: 'boolean', default: false })
+  isPremium: boolean;
 
   @Column({
     type: 'numeric',
@@ -80,7 +83,7 @@ export class User {
   unclaimedMiningReward: number;
 
   @Column({
-    type: 'timestamp with time zone',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   lastMiningInteraction: Date;
