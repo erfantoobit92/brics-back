@@ -88,6 +88,14 @@ export class User {
   })
   lastMiningInteraction: Date;
 
+  @Column({
+    type: 'timestamp',
+    nullable: true, // برای کاربرانی که هنوز نچرخوندن، null هست
+    name: 'last_spin_at',
+    comment: 'The timestamp of the last time the user spun the wheel',
+  })
+  lastSpinAt: Date | null;
+
   @OneToMany(() => UserHardware, (hardware) => hardware.user)
   hardwares: UserHardware[];
 

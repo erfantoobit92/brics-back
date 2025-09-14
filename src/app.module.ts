@@ -11,6 +11,8 @@ import { TasksModule } from './tasks/tasks.module';
 import { AdminHardwaresModule } from './mining/admin/admin-hardwares.module';
 import { AdminSettingsModule } from './settings/admin/admin-settings.module';
 import { StatsModule } from './stats/stats.module';
+import { BoostsModule } from './boosts/boosts.module';
+import { SpinWheelModule } from './spin-wheel/spin-wheel.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { StatsModule } from './stats/stats.module';
     AdminSettingsModule,
     TasksModule,
     StatsModule,
+    BoostsModule,
+    SpinWheelModule,
   ],
   controllers: [],
   providers: [],

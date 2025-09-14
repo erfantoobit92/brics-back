@@ -23,6 +23,16 @@ export class TranslatableStringDto {
   @IsString()
   @IsNotEmpty()
   zh: string;
+
+  
+  @IsString()
+  @IsNotEmpty()
+  ru: string;
+
+  
+  @IsString()
+  @IsNotEmpty()
+  hi: string;
 }
 
 export class CreateHardwareDto {
